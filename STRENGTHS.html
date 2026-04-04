@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-id="th-modified">WEMPACT - שאלון חוזקות VANex</title>
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --royal-blue: #112240;
+            --wimpact-orange: #b45309; 
+            --accent-gold: #fbbf24;
+            --text-white: #e6f1ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at center, var(--royal-blue) 0%, var(--dark-blue) 100%);
+            color: var(--text-white);
+            margin: 0;
+            display: flex;
+            justify-content: center; align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%; max-width: 650px;
+            background: rgba(17, 34, 64, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 25px; border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box; position: relative;
+        }
+
+        .corner-brand {
+            position: absolute; top: 15px; left: 15px;
+            text-align: left; font-size: 0.65rem; line-height: 1.2; opacity: 0.9;
+        }
+        .corner-brand b { color: var(--wimpact-orange); font-size: 0.8rem; display: block; }
+        .corner-brand span { color: white; display: block; white-space: nowrap; }
+
+        .logo-main { font-size: 2.2rem; font-weight: 900; text-align: center; margin: 0; letter-spacing: 2px; }
+        .sub-logo { font-size: 0.9rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px; opacity: 0.8; margin-bottom: 20px; }
+
+        .rules-list { list-style: none; padding: 0; margin: 0 0 25px 0; text-align: right; }
+        .rules-list li { 
+            position: relative; padding-right: 35px; margin-bottom: 15px; 
+            line-height: 1.6; font-size: 1rem; text-align: justify;
+        }
+        .rules-list li::before { 
+            content: attr(data-num) "."; position: absolute; right: 0; top: 0;
+            width: 25px; text-align: center; color: var(--accent-gold); font-weight: bold; font-size: 1.1rem; 
+        }
+
+        .btn-action { background: var(--wimpact-orange); color: white; border: none; padding: 14px; font-size: 1.1rem; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; transition: 0.3s; margin-bottom: 10px; }
+        
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; text-align: right; font-size: 1rem; }
+
+        .flash-banner { background: var(--wimpact-orange); color: white; padding: 14px 30px; border-radius: 12px; font-weight: bold; text-align: center; margin: 10px auto; border: 2px solid var(--accent-gold); animation: pulse 1.5s infinite; cursor: pointer; font-size: 1.1rem; display: block; }
+        .flash-banner-white { background: white; color: var(--dark-blue); padding: 15px 30px; border-radius: 12px; font-weight: bold; text-align: center; margin: 25px auto; border: 2px solid var(--wimpact-orange); animation: pulse-white 1.5s infinite; cursor: pointer; font-size: 1.1rem; display: block; }
+        
+        @keyframes pulse { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.05);} }
+        @keyframes pulse-white { 0%, 100% {opacity: 1;} 50% {opacity: 0.6;} }
+
+        .progress-wrapper { position: relative; margin: 30px 0 15px 0; height: 35px; }
+        .walker { position: absolute; bottom: 8px; font-size: 24px; transition: right 0.4s ease; transform: translateX(50%); z-index: 2; }
+        .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: absolute; bottom: 0; width: 100%; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--wimpact-orange); width: 0%; transition: 0.4s; }
+
+        .q-text { font-size: 1.2rem; font-weight: 700; text-align: center; margin: 20px 0; line-height: 1.4; min-height: 70px; display: flex; align-items: center; justify-content: center; text-wrap: balance; }
+        .opt-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px; border-radius: 10px; cursor: pointer; font-size: 1rem; text-align: center; margin-bottom: 8px; transition: 0.2s; }
+
+        .orange-frame { border: 2px solid var(--wimpact-orange); background: rgba(180, 83, 9, 0.1); padding: 20px; border-radius: 15px; margin: 15px 0; text-align: right; }
+        .hidden { display: none !important; }
+
+        /* עיצוב החוזקות בשורה אחת */
+        .strength-line { margin-bottom: 12px; line-height: 1.4; font-size: 1rem; text-align: right; }
+        .strength-line b { color: var(--accent-gold); }
+
+        .footer-credits { font-size: 0.85rem; text-align: center; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; opacity: 0.9; }
+
+        @media print {
+            body { background: white !important; color: black !important; display: block !important; }
+            .container { width: 100%; max-width: 100%; border: none; box-shadow: none; background: white; padding: 0; position: static !important; overflow: visible !important; }
+            .btn-action, .flash-banner, .flash-banner-white, .progress-wrapper, .walker, #btn-full-list, #save-tip, .corner-brand { display: none !important; }
+            .orange-frame { border: 4px solid #b45309 !important; background: white !important; color: black !important; page-break-inside: avoid; display: block !important; visibility: visible !important; opacity: 1 !important; margin: 20px 0 !important; }
+            .strength-line b, .orange-frame h3, .orange-frame div, .orange-frame strong { color: black !important; }
+            #res-full-list { display: block !important; visibility: visible !important; }
+            .footer-credits { color: black !important; border-top: 1px solid black; }
+        }
+    </style>
+<meta property="og:title" content="WEMPACT - שאלון חוזקות VANex" data-id="th-modified"><meta property="og:image" content="https://wempactstrengths.tiiny.site/og-image.jpeg" data-id="th-modified"><meta property="og:url" content="https://wempactstrengths.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="wempactstrengths.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+<body>
+
+    <div id="scr-login" class="container">
+        <div class="logo-main">WEMPACT</div>
+        <div class="sub-logo">פיתוח ארגונים | צוותים | מנהלים</div>
+        <div style="line-height: 1.8; font-size: 1.05rem; text-align: right; margin-bottom: 20px;">
+            <strong>שלום רב,</strong><br><br>
+            לפניך שאלון למיפוי החוזקות המרכזיות שלך.<br><br>
+            לאחר מילוי השאלון, תוכל/י להכיר מהן החוזקות המרכזיות שלך ובשילוב עם הסדנה תוכל/י להעמיק בהן ולהבין כיצד להשתמש בהן לטובתך בחיים ובעבודה.
+        </div>
+        <input type="text" id="name-in" placeholder="הזן את שמך המלא">
+        <input type="text" id="code-in" placeholder="להזנת קוד כניסה לשאלון">
+        <button class="btn-action" onclick="checkEntry()">כניסה לשאלון</button>
+    </div>
+
+    <div id="scr-rules" class="container hidden">
+        <div class="logo-main">WEMPACT</div>
+        <div class="sub-logo">פיתוח ארגונים | צוותים | מנהלים</div>
+        <div id="personal-greet" style="font-size: 1.1rem; font-weight: bold; color: var(--accent-gold); text-align: right; margin-bottom: 12px;"></div>
+        <ul class="rules-list">
+            <li data-num="1">לפניך "שאלון רץ" בן 90 היגדים.<br>המילוי אורך כ-10 דקות בממוצע ואינו מצריך "חשיבת עומק" .</li>
+            <li data-num="2">בסיום מילוי השאלון, יוצג לך הסבר לאיפיון דוח החוזקות שלך.</li>
+            <li data-num="3">עבור כל היגד שיוצג, עליך לדרג את מידת התאמתו אליך על סקאלה שבין "מתאים לי מאוד" לבין "ממש ממש לא מתאים לי" - (דומה לדירוג של 1-5).</li>
+            <li data-num="4">מומלץ מאוד לסמן את התשובה הראשונה שעולה בראשך.</li>
+            <li data-num="5">לאחר הזנת התשובה - לא ניתן לחזור לשאלה קודמת.</li>
+            <li data-num="6">לסיום, מדובר בשאלון חוזקות ולכן כל תשובה תהיה רלוונטית😊.</li>
+            <li data-num="7">השאלון מנוסח בלשון זכר מטעמי נוחות בלבד, אך פונה לכל המינים.</li>
+        </ul>
+        <div style="display: flex; justify-content: center;">
+            <div class="flash-banner" onclick="startSurvey()">יאללה מתחילים 😊</div>
+        </div>
+    </div>
+
+    <div id="scr-quiz" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <div class="progress-wrapper">
+            <div id="walking-man" class="walker">🚶‍♂️</div>
+            <div class="bar-bg"><div id="bar-main" class="bar-fill"></div></div>
+        </div>
+        <div id="q-display" class="q-text"></div>
+        <div id="options-area"></div>
+        <div style="text-align: center; margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">היגד <span id="q-num">1</span> מתוך 90</div>
+    </div>
+
+    <div id="scr-end" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <div style="text-align: right; line-height: 1.6;">
+            <h2 style="color: var(--accent-gold);"><span id="final-name"></span>, כל הכבוד על ההשקעה!</h2>
+            <p>יצאו לך חוזקות משמעותיות ביותר.</p>
+            <p>רגע לפני הצגת חוזקות החותם שלך, מצורף הסבר קצר לתשובות שיוצגו:</p>
+            <div style="background: var(--wimpact-orange); padding: 12px; border-radius: 10px; margin: 10px 0; font-weight: bold; color: white; font-size: 0.95rem;">
+                בחלק הראשון יוצגו חוזקות החותם לפי 4 תחומים מרכזיים:<br>
+                יחסים בינאישיים | מנהיגות והובלה | השפעה וביצוע | חשיבה אסטרטגית
+            </div>
+            <p style="background: var(--wimpact-orange); padding: 10px; border-radius: 10px; font-weight: bold; color: white; font-size: 0.95rem;">מתחת לחלק זה יוצג סיכום של 5 החוזקות שקיבלו את הדירוג הגבוה ביותר.</p>
+            <div style="display: flex; justify-content: center;">
+                <button class="flash-banner-white" onclick="showResults()">זה הזמן לצפות בתוצאות שלך</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-res" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <h3 style="text-align: center;">שלום <span id="res-user" style="color:var(--accent-gold)"></span>, אלו החוזקות שלך:</h3>
+        <div id="res-cats" class="orange-frame"></div>
+        <div class="orange-frame">
+            <h3 style="margin-top: 0; text-decoration: underline;">חמשת החוזקות המרכזיות שלך:</h3>
+            <div id="res-top5"></div>
+        </div>
+        <button id="btn-full-list" class="btn-action" style="background:rgba(255,255,255,0.1); border:1px solid var(--wimpact-orange)" onclick="toggleFullList()">צפייה במפת החוזקות המלאה (1-30)</button>
+        <div id="res-full-list" class="orange-frame hidden">
+            <h3 style="margin-top:0;">דירוג כלל החוזקות:</h3>
+            <div id="full-list-content" style="font-size:0.9rem;"></div>
+        </div>
+        <button class="btn-action" onclick="window.print()">להורדת/הדפסת דוח החוזקות</button>
+        <p id="save-tip" style="text-align:center; font-size:0.7rem; opacity:0.7;">(במחשב: בחר "שמירה כ-PDF" בתפריט ההדפסה)</p>
+
+        <div class="footer-credits">
+            🤝 תודה על שיתוף הפעולה!<br>
+            אתר: www.wempact.co.il | מייל: wempacto@gmail.com<br>
+            כל הזכויות שמורות ל-WEMPACT &copy; 2026
+        </div>
+    </div>
+
+    <script>
+        let uName = "";
+        let qIdx = 0;
+        let quizQ = [];
+        let finalScores = {};
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwF_H5iOoqVbQBB34Qp0EwgbPsZ-v3RmgHpyaq6E1Rgs7hnhHTzOOO9TmTVBWiGZptd/exec";
+
+        const sData = [
+            { n: "אמפתיה",c: "יחסים בינאישיים", d: "זיהוי והבנת רגשות של אחרים לעומק", q: ["אני מזהה בקלות מתי חבר לצוות עובר יום קשה", "חשוב לי להבין את הצד הרגשי של הקולגות עימם אני עובד", "לעיתים אני מתקשה להבין מדוע אנשים סביבי נפגעים"],i: [0, 0, 1] },
+            { n: "אינטליגנציה רגשית", c: "יחסים בינאישיים", d: "שליטה עצמית רגשית וקריאת דינמיקה", q: ["אני יודע לשלוט בתגובות שלי גם תחת לחץ", "אני קורא נכון את הדינמיקה בחדר ויודע מתי לדבר", "לעיתים אני פועל לפני שחשבתי לעומק על כל המשמעויות, מתוך העדפה לייצר מומנטום ולקדם את העשייה בשטח"], i: [0, 0, 1] },
+            { n: "טיפוח קשרים", c: "יחסים בינאישיים", d: "בניית מערכות יחסים יציבות המבוססות על אמון", q: ["אני מעדיף לטפח קשרי עבודה אישיים ועמוקים על פני הכרויות שטחיות רבות", "האנשים שעובדים איתי יודעים שהם יכולים לסמוך עליי", "בד\"כ אני לא מרגיש צורך להשקיע בבניית קשר אישי עם אחרים"], i: [0, 0, 1] },
+            { n: "פיתוח אחרים", c: "יחסים בינאישיים", d: "זיהוי פוטנציאל אצל אחרים וצמיחה", q: ["אני שואב סיפוק מלראות חבר צוות מצליח בזכות הכוונה שלי", "יש לי יכולת לזהות פוטנציאל אצל אחרים עוד לפני שאחרים רואים בו", "לרוב אני מעדיף להתמקד בהישגים שלי מאשר להשקיע באחרים"], i: [0, 0, 1] },
+            { n: "יושרה ואותנטיות", c: "יחסים בינאישיים", d: "פעולה מתוך כנות ועקביות בין הערכים למעשים", q: ["חשובה לי האותנטיות בשיח המקצועי ולכן אני מקפיד על הלימה בין אמירותיי למעשיי בשטח", "אני פועל לפי העקרונות שלי גם כשהדרך קשה", "אין לי בעיה לעגל פינות כדי להצליח"], i: [0, 0, 1] },
+            { n: "צניעות",c: "יחסים בינאישיים", d: "התמקדות במשימה ללא צורך בהאדרה", q: ["אני מרגיש בנוח לתת לאחרים את הקרדיט על הצלחה", "אני דוגל בעשייה שקטה ועיניינית, ומעדיף לתת לתוצאות בשטח לבטא את ערכי המקצועי", "קשה לי לעבוד ללא קבלת הכרה פומבית על ידי אחרים"], i: [0, 0, 1] },
+            { n: "הגינות וצדק", c: "יחסים בינאישיים", d: "מחויבות ליחס שוויוני והוגן לכל אדם", q: ["אני מתייחס לכל אדם בצוות באותה מידה של כבוד", "כשאני מזהה חוסר הגינות, אני מרגיש צורך לפעול לתיקון", "אני מאמין שצריך לתת עדיפות למקורבים"],i: [0, 0, 1] },
+            { n: "עבודת צוות", c: "יחסים בינאישיים", d: "יצירת שיתוף פעולה פורה", q: ["אני מאמין שבמקום העבודה - הצלחת הצוות חשובה יותר מההצלחה האישית שלי", "אני טוב בלחבר בין יכולות של אנשים שונים למען המטרה הגדולה", "אני עובד הרבה יותר טוב ומהר כשאני לבד"], i: [0, 0, 1] },
+            { n: "הובלה",c: "מנהיגות והובלה", d: "הובלת אנשים תוך השראת ביטחון", q: ["אנשים בצוות נוטים לפנות אליי שאוביל את המשימה", "יש לי יכולת לחבר ולסחוף אנשים סביבי מטרה משותפת", "אני מעדיף שמישהו אחר יקבע את הכיוון"], i: [0, 0, 1] },
+            { n: "כריזמה",c: "מנהיגות והובלה", d: "נוכחות כובשת ותקשורת מלהיבה", q: ["בארועים ובמפגשים עם אחרים, אני מרגיש בנוח להיות במרכז העיניינים", "אני ניחן ביכולת לייצר זרם מהיר של רעיונות חדשים ומקוריים למצבים שונים ומגוונים", "שאני עם אחרים , אני מרגיש בנוח לצפות מהצד במתרחש מאשר להיות במרכז העניינים"],i: [0, 0, 1] },
+            { n: "אחריות",c: "מנהיגות והובלה", d: "בעלות מלאה על המשימה ותוצאותיה", q: ["כשאני לוקח על עצמי משימה, אני ערב לתוצאה עד לסוף", "קשה לי לעזוב משימה לא פתורה", "אם המשימה הצוותית נכשלה בגלל גורם חיצוני, איני רואה בעצמי אחראי לכך"], i: [0, 0, 1] },
+            { n: "ביטחון עצמי", c: "מנהיגות והובלה", d: "אמונה חזקה ביכולות", q: ["אני סומך על השיפוט המקצועי שלי", "יש לי תחושה פנימית חזקה שאני מסוגל להתמודד עם כל אתגר", "ביקורת של אחרים מערערת בקלות את האמונה שלי ביכולותיי"], i: [0, 0, 1] },
+            { n: "אומץ",c: "מנהיגות והובלה", d: "נכונות להתמודד עם פחד ואי-ודאות", q: ["אני מוכן לומר דברים לא פופולריים כשנדרש", "אני פועל בנחישות גם כאשר יש מצב של חוסר ודאות", "אני נוטה להימנע מעימותים גם אם לדעתי ההחלטה הסופית תהיה שגויה"], i: [0, 0, 1] },
+            { n: "תקשורת",c: "מנהיגות והובלה", d: "העברת מסרים מורכבים בפשטות", q: ["אני יודע להסביר נושאים מורכבים בפשטות", "כשאני מציג רעיון בפני אנשים אחרים, אני מצליח לעורר בהם עניין", "לעיתים אני מרגיש שאנשים לא מבינים אותי"], i: [0, 0, 1] },
+            { n: "פרואקטיביות",c: "מנהיגות והובלה", d: "יוזמה עצמאית לביצוע", q: ["כשעולה רעיון חדש, אני שואף לעבור מהר ככל הניתן משלב התכנון לשלב הביצוע", "כשיש רעיון חדש, אני פועל לביצוע מיידי שלו", "אני מרגיש לא בנוח לפעול לפני שכל הפרטים סגורים"], i: [0, 0, 1] },
+            { n: "הישגיות",c: "השפעה וביצוע", d: "דחף פנימי לעמידה ביעדים גבוהים", q: ["יש לי צורך פנימי לסמן 'וי' על משימות בסוף יום", "אני תמיד מציב לעצמי רף גבוה יותר מהיעד שהוצב לי", "ברגע שהגעתי למינימום הנדרש, איני רואה טעם להמשיך"],i: [0, 0, 1] },
+            { n: "משמעת",c: "השפעה וביצוע", d: "דבקות בתוכנית העבודה", q: ["אני נצמד לתוכנית העבודה שלי גם כשיש הסחות דעת מסביב", "יש לי יכולת לעבוד על משימות מונוטוניות לאורך זמן", "אני נוטה לאבד עניין אם המשימה מסתבכת"], i: [0, 0, 1] },
+            { n: "מיקוד ויעילות", c: "השפעה וביצוע", d: "תיעדוף העיקר וסינון רעשי רקע", q: ["בד\"כ אני מקפיד לבחור בפעולות שמקרבות אותי למטרות שלי", "אני תמיד יודע מה המשימה הכי קריטית שלי כרגע", "לעיתים קרובות אני מתפזר בין משימות"], i: [0, 0, 1] },
+            { n: "סדר וארגון", c: "השפעה וביצוע", d: "ניהול משאבים ולוחות זמנים", q: ["אני טוב בלסנכרן ולמקסם בין משאבים", "הסביבה והמשימות שלי תמיד מאורגנות בצורה מסודרת", "מצבים עם הרבה משתנים גורמים לי לבלבול"],i: [0, 0, 1] },
+            { n: "סתגלנות",c: "השפעה וביצוע", d: "תגובה מהירה ויעילה לשינויים", q: ["אני נוטה לפעול במיטבי בסביבה דינאימית ויודע להתאים את עצמי במהירות לשינויים בלתי צפויים", "שינויים בתוכניות לא מלחצים אותי אלא מעוררים בי דחף למציאת פתרונות אחרים", "אני מתקשה לתפקד כשסדר היום משתנה מהתכנון המקורי"], i: [0, 0, 1] },
+            { n: "מצוינות",c: "השפעה וביצוע", d: "שאיפה לשיפור הסטנדרטים", q: ["אני תמיד מחפש איך להפוך 'טוב' ל'מצוין'", "אני מעדיף להשקיע בחוזקות שלי ושל אחרים סביבי מאשר בתיקון החולשות", "אני שואף למצות את מלוא הפוטנציאל של כל משימה ולהביא אותה לרמת הביצוע הגבוהה ביותר האפשרית מבחינתי"], i: [0, 0, 1] },
+            { n: "דיוק",c: "השפעה וביצוע", d: "תשומת לב קפדנית לפרטים", q: ["בד״כ אני מקפיד על הפרטים הקטנים ביותר", "אני תמיד מוודא פעמיים שהתוצר שלי עומד בסטנדרטים הנדרשים", "אני נוטה לפספס פרטים קטנים בלחץ של זמן"], i: [0, 0, 1] },
+            { n: "אנליטיות",c: "חשיבה אסטרטגית", d: "בחינה לוגית של נתונים", q: ["אני מחפש נתונים והוכחות לפני שאני משתכנע ופועל", "יש לי יכולת טובה לפרק בעיות מורכבות לחלקים קטנים", "אני מקבל החלטות על סמך תחושת בטן"], i: [0, 0, 1] },
+            { n: "יצירתיות",c: "חשיבה אסטרטגית", d: "פתרונות לא שגרתיים וחדשניים", q: ["אני נוטה לחפש פתרונות מקוריים ולא שגרתיים לאתגרים מורכבים", "לעיתים קרובות אני מעלה רעיונות שמפתיעים את האנשים סביבי", "אני מעדיף להיצמד לשיטות מוכרות"], i: [0, 0, 1] },
+            { n: "למידה",c: "חשיבה אסטרטגית", d: "תשוקה לרכישת ידע חדש", q: ["התהליך של רכישת ידע חדש מרגש אותי מאוד", "אני תמיד מחפש ללמוד תחומים חדשים", "אני מרגיש שיש לי מספיק ידע בתחום עיסוקי ואין לי צורך בלמידה נוספת"], i: [0, 0, 1] },
+            { n: "סקרנות",c: "חשיבה אסטרטגית", d: "פתיחות להתנסויות והבנת ה'למה'", q: ["חשוב לי לשאול למה כדי להבין לעומק את משמעות הדברים", "אני פתוח להתנסויות של חוויות חדשות", "אין לי צורך לחקור דברים מעבר לנדרש"], i: [0, 0, 1] },
+            { n: "חשיבה ביקורתית", c: "חשיבה אסטרטגית", d: "בחינה אובייקטיבית וזיהוי כשלים", q: ["אני בוחן עובדות באופן אובייקטיבי ועינייני", "אני תמיד בודק את ההיגיון מאחורי הדברים שמוצגים לי", "אנני ממהר לאמץ את דעת הרוב, אני מעדיף לבסס את עמדתי על בסיס ניתוח עובדתי ושיקול דעת עצמאי"], i: [0, 0, 1] },
+            { n: "אופטימיות",c: "חשיבה אסטרטגית", d: "זיהוי הזדמנויות ואמונה בעתיד", q: ["אני מצליח למצוא נקודות אור והזדמנויות במשברים", "אני מאמין שהעתיד יהיה טוב יותר מההווה, והאמונה הזאת דוחפת אותי לחפש הזדמנויות חדשות בכל מצב", "כשאני נתקל במכשול, אני רואה את הגרוע מכל לפניי"],i: [0, 0, 1] },
+            { n: "פרספקטיבה",c: "חשיבה אסטרטגית", d: "ראיית התמונה הרחבה ומבט רחוק", q: ["חברים בצוות נוטים לבקש את עצתי כי אני נוטה לראות את התמונה הרחבה", "אני נוטה לבחון מצבים מנקודת מבט רחבה ולגבש דעה שקולה ומאוזנת", "אני נוטה להעמיק בפרטים הקטנים מתוך הבנה שהם אלו שמעניקים הקשר ודיוק לתמונה הכוללת"], i: [0, 0, 1] },
+            { n: "הגיית רעיונות", c: "חשיבה אסטרטגית", d: "יכולת ייצור רעיונות מהירה", q: ["אני ניחן ביכולת לייצר זרם מהיר של רעיונות חדשים ומקוריים למצבים שונים ומגוונים", "לקראת ארוע עתידי מתוכנן - אני נוטה להיות חלק מצוות החשיבה שהוגה את הרעיונות", "קשה לי לייצר רעיונות ללא הנחיה ברורה"],i: [0, 0, 1] }
+        ];
+
+        function checkEntry() {
+            uName = document.getElementById('name-in').value;
+            const code = document.getElementById('code-in').value;
+            const d = new Date();
+            const dailyCode = `${d.getDate()}${d.getMonth() + 1}26`;
+            
+            if (uName.length < 2) return alert("אנא הזן שם מלא");
+            if (code === dailyCode || code === "5326" || code === "8326") {
+                document.getElementById('scr-login').classList.add('hidden');
+                document.getElementById('personal-greet').innerText = `היי ${uName}, מה שלומך היום?`;
+                document.getElementById('scr-rules').classList.remove('hidden');
+            } else {
+                alert("קוד כניסה שגוי.");
+            }
+        }
+
+        function startSurvey() {
+            quizQ = [];
+            sData.forEach((s, sI) => s.q.forEach((t, i) => quizQ.push({t, sI, inv: s.i[i]})));
+            quizQ.sort(() => Math.random() - 0.5);
+            document.getElementById('scr-rules').classList.add('hidden');
+            document.getElementById('scr-quiz').classList.remove('hidden');
+            renderQ();
+        }
+
+        function renderQ() {
+            const pct = (qIdx / 90) * 100;
+            document.getElementById('bar-main').style.width = pct + "%";
+            document.getElementById('walking-man').style.right = pct + "%";
+            
+            const q = quizQ[qIdx];
+            document.getElementById('q-display').innerText = q.t;
+            document.getElementById('q-num').innerText = qIdx + 1;
+            const area = document.getElementById('options-area');
+            area.innerHTML = '';
+            ["מתאים לי מאוד", "מתאים לי בד״כ", "נטרלי", "לא מתאים לי", "ממש ממש לא מתאים לי"].forEach((txt, i) => {
+                const b = document.createElement('div');
+                b.className = 'opt-card'; b.innerText = txt;
+                b.onclick = () => {
+                    const score = q.inv ? (i + 1) : (5 - i);
+                    finalScores[q.sI] = (finalScores[q.sI] || 0) + score;
+                    qIdx++;
+                    if (qIdx < quizQ.length) renderQ(); else {
+                        finishSurvey();
+                    }
+                };
+                area.appendChild(b);
+            });
+        }
+
+        function finishSurvey() {
+            document.getElementById('scr-quiz').classList.add('hidden');
+            document.getElementById('final-name').innerText = uName;
+            document.getElementById('scr-end').classList.remove('hidden');
+            
+            let res = sData.map((s, i) => ({...s, score: (finalScores[i] || 0)}));
+            const sorted = res.sort((a,b) => b.score - a.score);
+            const top5Str = sorted.slice(0, 5).map(s => s.n).join(", ");
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ name: uName, topStrengths: top5Str })
+            }).catch(e => console.error("Error sending data:", e));
+        }
+
+        function showResults() {
+            document.getElementById('scr-end').classList.add('hidden');
+            document.getElementById('scr-res').classList.remove('hidden');
+            document.getElementById('res-user').innerText = uName;
+            
+            let res = sData.map((s, i) => ({...s, score: (finalScores[i] || 0)}));
+            const sorted = res.sort((a,b) => b.score - a.score);
+            
+            const cats = ["יחסים בינאישיים", "מנהיגות והובלה", "השפעה וביצוע", "חשיבה אסטרטגית"];
+            const catArea = document.getElementById('res-cats');
+            catArea.innerHTML = "";
+            cats.forEach((c, idx) => {
+                const f = sorted.filter(r => r.c === c);
+                if(f.length > 0) {
+                    catArea.innerHTML += `<div style="margin-bottom:10px;"><strong>${idx + 1}. ${c}:</strong> ${f[0].n} | ${f[1].n}</div>`;
+                }
+            });
+
+            const t5a = document.getElementById('res-top5');
+            t5a.innerHTML = "";
+            sorted.slice(0, 5).forEach((s, i) => {
+                // הצגה בשורה אחת: מספר. שם - תיאור
+                t5a.innerHTML += `<div class="strength-line"><strong>${i+1}. ${s.n}</strong> - ${s.d}</div>`;
+            });
+
+            const fullContent = document.getElementById('full-list-content');
+            fullContent.innerHTML = "";
+            sorted.forEach((s, i) => {
+                fullContent.innerHTML += `<div style="border-bottom: 1px solid rgba(0,0,0,0.1); padding: 5px 0;">${i+1}. ${s.n} (${s.c})</div>`;
+            });
+        }
+
+        function toggleFullList() {
+            document.getElementById('res-full-list').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
