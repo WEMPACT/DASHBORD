@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-id="th-modified">WEMPACT - שאלון סגנונות ניהול קונפליקט</title>
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --royal-blue: #112240;
+            --wimpact-orange: #b45309; 
+            --accent-gold: #fbbf24;
+            --text-white: #e6f1ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at center, var(--royal-blue) 0%, var(--dark-blue) 100%);
+            color: var(--text-white);
+            margin: 0;
+            display: flex;
+            justify-content: center; align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%; max-width: 650px;
+            background: rgba(17, 34, 64, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 25px; border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box; position: relative;
+        }
+
+        .corner-brand {
+            position: absolute; top: 15px; left: 15px;
+            text-align: left; font-size: 0.65rem; line-height: 1.2; opacity: 0.9;
+        }
+        .corner-brand b { color: var(--wimpact-orange); font-size: 0.8rem; display: block; }
+        .corner-brand span { color: white; display: block; white-space: nowrap; }
+
+        .logo-main { font-size: 2.2rem; font-weight: 900; text-align: center; margin: 0; letter-spacing: 2px; }
+        .sub-logo { font-size: 0.9rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px; opacity: 0.8; margin-bottom: 20px; }
+
+        .rules-list { list-style: none; padding: 0; margin: 0 0 25px 0; text-align: right; }
+        .rules-list li { 
+            position: relative; padding-right: 35px; margin-bottom: 15px; 
+            line-height: 1.6; font-size: 1rem; text-align: justify;
+        }
+        .rules-list li::before { 
+            content: attr(data-num) "."; position: absolute; right: 0; top: 0;
+            width: 25px; text-align: center; color: var(--accent-gold); font-weight: bold; font-size: 1.1rem; 
+        }
+
+        .btn-action { background: var(--wimpact-orange); color: white; border: none; padding: 14px; font-size: 1.1rem; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); margin-top: 5px; }
+
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; box-sizing: border-box; text-align: right; font-size: 1rem; }
+        
+        .flash-banner { background: var(--wimpact-orange); color: white; padding: 14px 30px; border-radius: 12px; font-weight: bold; text-align: center; margin: 20px auto; border: 2px solid var(--accent-gold); animation: pulse 1.5s infinite; cursor: pointer; font-size: 1.1rem; display: block; }
+        @keyframes pulse { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.05);} }
+
+        .progress-wrapper { position: relative; margin: 30px 0 15px 0; height: 35px; }
+        .walker { position: absolute; bottom: 8px; font-size: 24px; transition: right 0.4s ease; transform: translateX(50%); z-index: 2; }
+        .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: absolute; bottom: 0; width: 100%; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--wimpact-orange); width: 0%; transition: 0.4s; }
+
+        .q-header-text { font-size: 1.2rem; font-weight: 700; text-align: center; margin-bottom: 20px; color: var(--accent-gold); line-height: 1.4; }
+        
+        .opt-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 8px; gap: 15px; }
+        .opt-label { flex: 1; font-size: 0.95rem; line-height: 1.3; text-align: right; }
+        .sel-score { width: 115px; height: 48px; padding: 5px; border-radius: 8px; background: var(--royal-blue); color: white; border: 2.5px solid var(--accent-gold); font-size: 1.2rem; font-weight: bold; cursor: pointer; text-align: center; }
+
+        .res-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-radius: 50px; margin-bottom: 10px; color: white; font-weight: bold; }
+        .hidden { display: none !important; }
+        .orange-frame { border: 2px solid var(--wimpact-orange); background: rgba(180, 83, 9, 0.1); padding: 20px; border-radius: 15px; margin: 15px 0; }
+
+        @media print {
+            body { background: white !important; color: black !important; display: block !important; }
+            .container { width: 100%; max-width: 100%; border: none; box-shadow: none; background: white; padding: 0; position: static !important; }
+            .btn-action, .progress-wrapper, .walker, .corner-brand, #btn-back { display: none !important; }
+            .orange-frame { border: 2px solid black !important; background: white !important; color: black !important; page-break-inside: avoid; }
+            .res-item { border: 1px solid #000; color: black !important; background: none !important; margin-bottom: 5px; }
+            .footer-credits { color: black !important; border-top: 1px solid #000; }
+        }
+    </style>
+<meta property="og:title" content="WEMPACT - שאלון סגנונות ניהול קונפליקט" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:url" content="https://wempactconflict.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="wempactconflict.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+<body>
+
+    <div id="scr-login" class="container">
+        <div class="logo-main">WEMPACT</div>
+        <div class="sub-logo">פיתוח ארגונים | צוותים | מנהלים</div>
+        <div style="line-height: 2.2; font-size: 1.05rem; text-align: right; margin-bottom: 30px;">
+            <strong>שלום רב,</strong><br><br>
+            לפניך שאלון לזיהוי סגנון ניהול קונפליקט בחיים ובעבודה בפרט.<br><br>
+            לאחר מילוי השאלון ובשילוב סדנת ניהול ממשקים וקונפליקטים, תוכל/י להבין לעומק את משמעות תוצאות השאלון.
+        </div>
+        <input type="text" id="name-in" placeholder="הזן את שמך המלא">
+        <input type="text" id="code-in" placeholder="להזנת קוד כניסה לשאלון">
+        <button class="btn-action" onclick="checkEntry()">כניסה לשאלון</button>
+    </div>
+
+    <div id="scr-rules" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <div class="logo-main" style="margin-top:20px;">WEMPACT</div>
+        <div id="personal-greet" style="font-size: 1.1rem; font-weight: bold; color: var(--accent-gold); text-align: right; margin: 20px 0;"></div>
+        <ul class="rules-list">
+            <li data-num="1">לפניך 10 סעיפים שבכל סעיף יש 5 היגדים. מבין חמשת ההיגדים עליך לשקול את מידת התאמתם אליך ולבחור את הציון המתאים.</li>
+            <li data-num="2"><strong>הציונים:</strong> 20 (ממש מאפיין), 15 (לעיתים קרובות), 10 (לעיתים רחוקות), 7 (פחות מאפיין), 2 (לא מאפיין).</li>
+            <li data-num="3">ניתן לסמן ציון אחד בלבד לכל היגד (לא ניתן לדרג פעמיים את אותו המספר בתוך אותו סעיף).</li>
+            <li data-num="4">אין סגנון טוב או רע, אנשים מורכבים ממספר סגנונות.</li>
+            <li data-num="5">חשוב לענות על פי מי שאתה ולא מי שתרצה להיות.</li>
+            <li data-num="6">השאלון מנוסח בלשון זכר ופונה לשני המינים.</li>
+        </ul>
+        <div class="flash-banner" onclick="startSurvey()">יאללה מתחילים 😊</div>
+    </div>
+
+    <div id="scr-quiz" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <div class="progress-wrapper">
+            <div id="walking-man" class="walker">🚶‍♂️</div>
+            <div class="bar-bg"><div id="bar-main" class="bar-fill"></div></div>
+        </div>
+        <div id="q-title" class="q-header-text"></div>
+        <div id="options-area"></div>
+        <button class="btn-action" onclick="nextPage()">המשך לסעיף הבא</button>
+        <button id="btn-back" class="btn-action btn-secondary hidden" onclick="prevPage()">חזרה לסעיף הקודם</button>
+        <div style="text-align: center; margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">סעיף <span id="q-num">1</span> מתוך 10</div>
+    </div>
+
+    <div id="scr-pre-end" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <div style="text-align: center; padding: 40px 10px;">
+            <div class="flash-banner" onclick="showResults()">יאללה זה הזמן לראות את מיפוי הסגנונות שלך 😊</div>
+        </div>
+    </div>
+
+    <div id="scr-res" class="container hidden">
+        <div class="corner-brand"><b>WEMPACT</b><span>פיתוח ארגונים|צוותים|מנהלים</span></div>
+        <h3 style="text-align: center;">שלום <span id="res-user" style="color:var(--accent-gold)"></span>, אלו התוצאות שלך:</h3>
+        <div id="res-traffic"></div>
+        <button class="btn-action" onclick="window.print()">להורדת/הדפסת דוח התוצאות</button>
+        <div class="orange-frame" style="text-align: center; font-weight: bold;">
+            זה בדיוק הזמן לחזור לסדנה וללמוד על כל סגנון 😊
+        </div>
+        <div class="footer-credits" style="text-align:center; margin-top:25px; border-top:1px solid rgba(255,255,255,0.2); padding-top:15px; font-size:0.8rem;">
+            תודה על שיתוף הפעולה!<br>
+            אתר: www.wempact.co.il | מייל: wempacto@gmail.com<br>
+            כל הזכויות שמורות ל-WEMPACT &copy; 2026
+        </div>
+    </div>
+
+    <script>
+        let uName = "", pageIdx = 0;
+        let selections = []; 
+        const styleNames = ["שותפות", "פשרה", "הימנעות", "ויתור", "סמכות"];
+        const trafficColors = ['#1b5e20', '#43a047', '#e67e22', '#fbc02d', '#f44336'];
+        const scoreOptions = [20, 15, 10, 7, 2];
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz66zaQCC8yeVfKKEhFxgSR76I0wbkqT3158ARLS6LOMfxtbEuZYSeyuIUuepMnXTjS/exec';
+
+        const conflictData = [
+            { q: "כשיש בעיה:", options: ["אני מעדיף להגיע לפתרון תוך שיתוף פעולה עם הצד השני", "אני מעדיף להגיע לפתרון של אמצע ביננו. קצת אני מוותר וקצת הצד השני מוותר", "אני מעדיף להתרחק ממנה", "אני מרגיש שאני מקריב את רצונותיי עבור רצונותיו של האחר", "יש רק דרך אחת לבצע את הדברים ולרוב היא שלי"] },
+            { q: "במצבי מחלוקת:", options: ["אני מנסה להציף מיד את כל הדאגות והסוגיות", "אני מנסה למצוא פתרון של פשרה", "אני מנסה להימנע ממתחים חסרי תועלת", "אני מוותר על כמה נקודות בתמורה לאחרות", "אני פועל לשכנע את האחר ביתרונות העמדה שלי"] },
+            { q: "במהלך דיון בו עולים רעיונות לגבי פתרון בעיה:", options: ["אני מספר לו על הרעיונות שלי ושואל לשלו", "אני מציע דרך ביניים", "אני מנסה לדחות את הנושא לחשיבה נוספת", "אני נותן לו לקחת אחריות לפתרון הבעיה", "אני נחוש להשיג את מטרותיי"] },
+            { q: "במהלך חילוקי דעות עם קולגה:", options: ["אני מנסה לעבוד על חילוקי הדעות בינינו", "אני מנסה לגרום לו להתפשר", "אני נמנע מלנקוט עמדות שייצרו מחלוקת", "אני דואג למילוי רצונות האחר", "אני עומד על רצונותיי באופן עקבי"] },
+            { q: "במהלך תכנון טיול לחו\"ל עם חבר, יש ביננו אי הסכמה לגבי הגעה ליעד ספציפי. כיצד אפעל?", options: ["אני אנסה להתמודד עם כל הדאגות שלי ושלו", "אני אחפש פתרון ביניים שיהיה טוב לשנינו", "אני נותן לו לקחת אחריות לפתרון הבעיה", "אני אוותר לו כדי לשמר את מערכת היחסים", "אני אנסה לפעול כך שהעמדה שלי תהיה הקובעת"] },
+            { q: "בתכנון פרויקט משותף יחד עם קולגה:", options: ["אני מספר לו על הרעיונות שלי ושואל לשלו", "אני מבין שאצטרך לבצע ויתורים מסוימים", "אני בוחן מה ייצא לי אם אתווכח בכלל", "אני מנסה לא לפגוע ברגשות האחר", "אני מפעיל לחץ כדי שהעמדה שלי תובהר"] },
+            { q: "כשמתעורר עימות:", options: ["חשוב לי להבין לעומק את צרכי הצד השני", "אני מוכן לוותר אם גם האחר יוותר", "אני דוחה את העיסוק בנושא כדי לא להיכנס אליו בכלל", "אני מוותר על רצונותיי לשימור הקשר", "אני משקיע מאמץ להראות שעמדתי נכונה"] },
+            { q: "שצריך לקבל החלטה משמעותית:", options: ["אפעל למציאת פתרון שיביא תועלת מירבית לכלל המעורבים", "אפעל להגיע לנקודת אמצע גם אם היא לא מושלמת", "אתן לאחר לקבל את ההחלטה", "שביעות רצון האחר חשובה לי יותר משלי", "אתעקש על הדרך שלי גם אם נוצר מתח"] },
+            { q: "בוויכוח עם הבן/בת זוג שלי:", options: ["אני אפעל לייצר מצב שבו שנינו מרגישים שהרוויחו", "חשוב לי שלא אחד מאיתנו יפסיד לגמרי", "אעמוד בצד ואתן לצד השני להחליט מה נכון עבורנו", "אני עשוי להתפשר גם כשאני חושב שאני צודק", "חשוב לי שיקשיבו לי מתוקף הניסיון הרב שיש לי"] },
+            { q: "במהלך יום גיבוש בעבודה, יש משימה צוותית שהיא תחרות מול צוות אחר. במשימה צריך לקבל החלטה תוך 5 דקות שעשויה להביא לניצחון. במצב של אי הסכמות:", options: ["אעודד שיח פתוח לפתרון הטוב ביותר", "אחפש דרך אמצע שתאזן בין הצרכים", "אעמוד בצד ואוותר על המתח שעלול להיווצר", "\"אקריב\" את טובתי האישית לשלום הבית בצוות", "אשתמש בטיעונים חזקים כדי לשכנע בדעתי"] }
+        ];
+
+        function sendToGoogleSheets(name, sortedResults) {
+            const dataForSheets = sortedResults.map(item => `${item.name} (${item.pct}%)`);
+            const data = { name: name, results: dataForSheets };
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        }
+
+        function checkEntry() {
+            uName = document.getElementById('name-in').value;
+            const inputCode = document.getElementById('code-in').value;
+            const d = new Date();
+            const dailyCode = d.getDate().toString() + (d.getMonth() + 1).toString() + d.getFullYear().toString().slice(-2);
+            if (uName.length < 2) return alert("אנא הזן שם מלא");
+            if (inputCode === dailyCode || inputCode === "8326" || inputCode === "5326") {
+                document.getElementById('scr-login').classList.add('hidden');
+                document.getElementById('personal-greet').innerText = `${uName}, מה שלומך היום?`;
+                document.getElementById('scr-rules').classList.remove('hidden');
+            } else alert("קוד שגוי");
+        }
+
+        function startSurvey() {
+            document.getElementById('scr-rules').classList.add('hidden');
+            document.getElementById('scr-quiz').classList.remove('hidden');
+            renderPage();
+        }
+
+        function renderPage() {
+            const pct = (pageIdx / 10) * 100;
+            document.getElementById('bar-main').style.width = pct + "%";
+            document.getElementById('walking-man').style.right = pct + "%";
+            document.getElementById('q-num').innerText = pageIdx + 1;
+            document.getElementById('btn-back').classList.toggle('hidden', pageIdx === 0);
+            const data = conflictData[pageIdx];
+            document.getElementById('q-title').innerText = data.q;
+            let indices = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+            const area = document.getElementById('options-area');
+            area.innerHTML = "";
+            indices.forEach(i => {
+                const optText = data.options[i];
+                const savedVal = selections[pageIdx] ? selections[pageIdx][i] : 0;
+                area.innerHTML += `<div class="opt-row"><span class="opt-label">${optText}</span><select class="sel-score" data-style-idx="${i}" onchange="validateSelection(this)"><option value="0">ציון</option>${scoreOptions.map(v => `<option value="${v}" ${v == savedVal ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`;
+            });
+            window.scrollTo(0,0);
+        }
+
+        function validateSelection(el) {
+            const currentVal = el.value;
+            if (currentVal === "0") return;
+            const allSelects = document.querySelectorAll('.sel-score');
+            allSelects.forEach(s => { if (s !== el && s.value === currentVal) { alert("כבר בחרת בציון זה לסעיף זה."); el.value = "0"; } });
+        }
+
+        function nextPage() {
+            const selects = Array.from(document.querySelectorAll('.sel-score'));
+            let currentVals = new Array(5).fill(0);
+            let filledCount = 0;
+            selects.forEach(s => { const val = parseInt(s.value); if (val > 0) { currentVals[parseInt(s.dataset.styleIdx)] = val; filledCount++; } });
+            if (filledCount < 5) return alert("אנא בחר ציון לכל ההיגדים");
+            selections[pageIdx] = currentVals;
+            pageIdx++;
+            if (pageIdx < 10) renderPage(); else { document.getElementById('scr-quiz').classList.add('hidden'); document.getElementById('scr-pre-end').classList.remove('hidden'); }
+        }
+
+        function prevPage() { if (pageIdx > 0) { pageIdx--; renderPage(); } }
+
+        function showResults() {
+            document.getElementById('scr-pre-end').classList.add('hidden');
+            document.getElementById('scr-res').classList.remove('hidden');
+            document.getElementById('res-user').innerText = uName;
+            let finalScores = [0, 0, 0, 0, 0];
+            selections.forEach(pageVals => { pageVals.forEach((val, styleIdx) => { finalScores[styleIdx] += val; }); });
+            const totalSum = finalScores.reduce((a, b) => a + b, 0);
+            
+            // יצירת מערך עם אחוזים לתצוגה ולשיטס
+            const sortedWithPct = finalScores.map((v, i) => {
+                const pct = ((v / totalSum) * 100).toFixed(1);
+                return { name: styleNames[i], val: v, pct: pct };
+            }).sort((a, b) => b.val - a.val);
+
+            const traffic = document.getElementById('res-traffic');
+            traffic.innerHTML = "";
+            sortedWithPct.forEach((item, i) => {
+                traffic.innerHTML += `<div class="res-item" style="background:${trafficColors[i]}"><span>${i+1}. ${item.name}</span><span>${item.val} נק' (${item.pct}%)</span></div>`;
+            });
+
+            sendToGoogleSheets(uName, sortedWithPct);
+        }
+    </script>
+</body>
+</html>
