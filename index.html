@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+        <html>
+          <head>
+            <title data-id="th-modified">Web Page</title>
+            
+          <meta property="og:title" content="Web Page" data-id="th-modified" ><meta name="description" content="code" data-id="th-modified" ><meta property="og:description" content="code" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:url" content="https://tan-kelcy-44.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="tan-kelcy-44.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+          <body>
+            <!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>WEMPACT DASHBOARD - FINAL VERSION</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --wempact-navy: #003366; --wempact-gold: #c0392b; --bg-light: #f4f7f9;
+            --lumina-blue: #00a8ff; --lumina-red: #ff4d4d; --lumina-yellow: #ffcc00; --lumina-green: #2ecc71;
+            --conf-red: #ff4d4d; --conf-green: #2ecc71; --conf-purple: #9b59b6; --conf-orange: #e67e22; --conf-grey: #95a5a6;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-light); margin: 0; padding: 0; font-size: 13px; }
+        #lock-screen { position: fixed; inset: 0; background: var(--wempact-navy); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; box-sizing: border-box; }
+        
+        header { background: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 500; }
+        .top-banner { background: var(--wempact-navy); color: white; padding: 30px 40px 50px 40px; text-align: right; }
+        .content-area { max-width: 1100px; margin: -40px auto 40px auto; padding: 0 15px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
+        .two-thirds { grid-column: span 2; } .full-width { grid-column: span 3; }
+        
+        .card-title { font-size: 15px; font-weight: bold; color: var(--wempact-navy); margin-bottom: 15px; border-right: 5px solid var(--wempact-gold); padding-right: 10px; }
+        .strength-tag { background: #f0f4f8; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: bold; text-align: center; border: 1px solid #dce6f0; margin-bottom: 6px; color: var(--wempact-navy); }
+        .analysis-text { line-height: 1.6; font-size: 14px; color: #333; background: #fffcf5; padding: 20px; border-radius: 10px; border-right: 5px solid var(--wempact-gold); white-space: pre-line; }
+        
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-bottom: 4px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        
+        .btn { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-sync { background: var(--lumina-blue); color: white; }
+        .btn-group { background: var(--wempact-gold); color: white; }
+        .btn-print { background: var(--wempact-navy); color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        @media print {
+            @page { size: A4; margin: 1cm; }
+            .no-print, header, #lock-screen { display: none !important; }
+            body { background: white; }
+            .content-area { margin-top: 0; }
+            .card { break-inside: avoid; border: 1px solid #eee; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="lock-screen">
+    <div class="login-card">
+        <h2 style="color:var(--wempact-navy); margin:0 0 10px 0;">WEMPACT DASHBOARD</h2>
+        <p style="font-size: 12px; color: #666;">אנא הזן סיסמת גישה</p>
+        <input type="password" id="passCode" class="login-input" placeholder="סיסמה">
+        <button onclick="unlock()" style="width:100%; padding:12px; background:var(--wempact-navy); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">כניסה למערכת</button>
+    </div>
+</div>
+
+<div id="main-app" style="display:none;">
+    <header class="no-print">
+        <div style="font-weight: bold; color: var(--wempact-navy); font-size: 18px; order: 2;">WEMPACT</div>
+        <div style="display:flex; gap:10px; order: 1; align-items: center;">
+            <select id="userSelector" onchange="loadUser()" style="padding:8px; border-radius:6px; min-width: 160px; border: 1px solid #ccc;"></select>
+            <button onclick="syncData()" id="syncBtn" class="btn btn-sync">🔄 סנכרן נתונים</button>
+            <button onclick="calculateGroup()" class="btn btn-group">👥 ממוצע קבוצתי</button>
+            <button onclick="window.print()" class="btn btn-print">🖨️ הדפס PDF</button>
+        </div>
+    </header>
+
+    <div id="report-content">
+        <div class="top-banner">
+            <h1 id="outTitle" style="margin:0; font-size: 32px;">טוען נתונים מהשרת...</h1>
+            <p style="font-size: 16px; opacity: 0.8; margin: 8px 0 0 0;">Wempact Executive Leadership Analysis</p>
+        </div>
+
+        <div class="content-area">
+            <div class="grid">
+                <div class="card two-thirds">
+                    <div class="card-title">סגנון תקשורת ואנרגיות (Lumina)</div>
+                    <div style="display:flex; align-items:center; gap:30px;">
+                        <div style="width:180px; height:180px;"><canvas id="luminaChart"></canvas></div>
+                        <div style="flex-grow:1; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div class="legend-item"><span class="dot" style="background:var(--lumina-blue)"></span> <b>כחול:</b> אנליטי, שיטתי, מחושב</div>
+                            <div class="legend-item"><span class="dot" style="background:var(--lumina-red)"></span> <b>אדום:</b> משימתי, החלטי, תחרותי</div>
+                            <div class="legend-item"><span class="dot" style="background:var(--lumina-green)"></span> <b>ירוק:</b> אמפתי, הרמוני, קשוב</div>
+                            <div class="legend-item"><span class="dot" style="background:var(--lumina-yellow)"></span> <b>צהוב:</b> חזוני, יצירתי, חברותי</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">ניהול קונפליקט</div>
+                    <div style="height:140px;"><canvas id="conflictChart"></canvas></div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; font-size:10px; margin-top:10px;">
+                        <div class="legend-item"><span class="dot" style="background:var(--conf-red)"></span> כוח וסמכות</div>
+                        <div class="legend-item"><span class="dot" style="background:var(--conf-green)"></span> שיתוף פעולה</div>
+                        <div class="legend-item"><span class="dot" style="background:var(--conf-purple)"></span> ויתור</div>
+                        <div class="legend-item"><span class="dot" style="background:var(--conf-orange)"></span> הימנעות</div>
+                        <div class="legend-item"><span class="dot" style="background:var(--conf-grey)"></span> פשרה</div>
+                    </div>
+                </div>
+
+                <div class="card two-thirds">
+                    <div class="card-title">מקורות כוח והשפעה</div>
+                    <div style="height:180px;"><canvas id="powerChart"></canvas></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">5 חוזקות מרכזיות (VANex)</div>
+                    <div id="strengthsList" style="display:flex; flex-direction:column; gap:6px; margin-top:10px;"></div>
+                </div>
+
+                <div class="card full-width">
+                    <div class="card-title">💡 ניתוח הפרופיל ותובנות ניהוליות</div>
+                    <div id="analysisContent" class="analysis-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // קישורי ה-CSV המעודכנים שלך
+    const VANEX_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQUk8ccuMKNK4BRJN7w5XMhhHOo_Mib-KcDbWFEuWhp3moNQlDIWUEbKD7p9GCJMHj7g2kyiSKEtqOo/pub?output=csv';
+    const LUMINA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSnO03PIKjtwqQ0zIcmuXlc3s4Ik5AwAUMNplJYfahids0JxajA8yQgBV12LJy26K8R6tdJE1-JFv1P/pub?output=csv';
+    const CONFLICT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYl8ZVcNDPmdfjSmkE0IUMQhtZYG72KToTg1aj-3RSOM2Ct6YQTH1Og07HA1opaRsAjERjlEOT3pnk/pub?output=csv';
+
+    let allData = [];
+    let charts = {};
+
+    function unlock() {
+        const pin = document.getElementById('passCode').value;
+        if(pin === "3635") {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            fetchData();
+        } else { 
+            alert("סיסמה שגויה. נסה שוב."); 
+        }
+    }
+
+    async function syncData() {
+        const btn = document.getElementById('syncBtn');
+        btn.disabled = true;
+        btn.innerText = "בסנכרן...";
+        await fetchData();
+        btn.innerText = "🔄 סנכרן נתונים";
+        btn.disabled = false;
+    }
+
+    async function fetchData() {
+        try {
+            const cacheBuster = `&t=${new Date().getTime()}`;
+            const [rL, rC, rV] = await Promise.all([
+                fetch(LUMINA_URL + cacheBuster), 
+                fetch(CONFLICT_URL + cacheBuster), 
+                fetch(VANEX_URL + cacheBuster)
+            ]);
+            
+            const tL = await rL.text(); const tC = await rC.text(); const tV = await rV.text();
+            
+            const parse = (txt) => txt.split('\n')
+                .filter(row => row.trim() !== "")
+                .map(row => row.split(',').map(c => c.trim().replace(/"/g,'')));
+            
+            const dataL = parse(tL).slice(1);
+            const dataC = parse(tC).slice(1);
+            const dataV = parse(tV).slice(1);
+
+            allData = dataL.map(l => {
+                const name = l[1] ? l[1].trim() : null;
+                if(!name || name === "" || name === "שם מלא") return null;
+
+                // חיפוש גמיש בגיליונות האחרים לפי שם
+                const c = dataC.find(x => x[1] && x[1].trim() === name) || [];
+                const v = dataV.find(x => x[1] && x[1].trim() === name) || [];
+
+                return {
+                    name: name,
+                    lumina: [Number(l[3])||0, Number(l[2])||0, Number(l[5])||0, Number(l[4])||0],
+                    conflict: [Number(c[3])||20, Number(c[4])||20, Number(c[5])||20, Number(c[6])||20, Number(c[7])||20],
+                    power: [20,25,30,15,10], // ערכים לדוגמה עד שתטמיע גיליון כוח
+                    strengths: [v[2], v[3], v[4], v[5], v[6]].filter(s => s && s.length > 1)
+                };
+            }).filter(u => u !== null);
+
+            const sel = document.getElementById('userSelector');
+            const currentSelected = sel.value;
+            sel.innerHTML = "";
+            
+            allData.forEach((u, i) => sel.options.add(new Option(u.name, i)));
+            
+            if (allData.length > 0) {
+                sel.value = (currentSelected < allData.length) ? currentSelected : 0;
+                loadUser();
+            } else {
+                document.getElementById('outTitle').innerText = "לא נמצאו נתונים בגיליונות";
+            }
+            
+        } catch (e) { 
+            console.error(e);
+            alert("שגיאה בטעינת הנתונים. וודא שגוגל שיטס מפורסם כ-CSV."); 
+        }
+    }
+
+    function loadUser() {
+        const u = allData[document.getElementById('userSelector').value];
+        if(u) render(u, false);
+    }
+
+    function render(u, isG) {
+        document.getElementById('outTitle').innerText = isG ? "דשבורד ממוצע קבוצתי" : `ניתוח הפרופיל של ${u.name}`;
+        
+        updateChart('luminaChart', u.lumina, ['#00a8ff', '#ff4d4d', '#ffcc00', '#2ecc71'], 'doughnut');
+        updateChart('conflictChart', u.conflict, ['#ff4d4d', '#2ecc71', '#9b59b6', '#e67e22', '#95a5a6'], 'pie');
+        updateChart('powerChart', u.power, ['#1b5e20', '#c62828', '#ec407a', '#81c784', '#b39ddb'], 'bar');
+        
+        document.getElementById('strengthsList').innerHTML = u.strengths.length 
+            ? u.strengths.map(s => `<div class="strength-tag">${s}</div>`).join('')
+            : `<div style="color:#999; font-style:italic;">לא הוזנו חוזקות</div>`;
+            
+        genText(u, isG);
+    }
+
+    function genText(u, isG) {
+        const topIdx = u.lumina.indexOf(Math.max(...u.lumina));
+        const colors = ["כחול", "אדום", "צהוב", "ירוק"];
+        const traits = [
+            "חשיבה לוגית, דייקנות וירידה לפרטים. נוטה לקבל החלטות מבוססות נתונים.",
+            "מיקוד בתוצאות, החלטיות ויכולת הובלה ישירה. פועל בצורה נמרצת להשגת יעדים.",
+            "חשיבה מחוץ לקופסה, יצירתיות ואנרגיה חברתית גבוהה. רותם אחרים באמצעות חזון.",
+            "דגש על מערכות יחסים, הרמוניה צוותית והקשבה. מניע תהליכים מתוך שיתוף פעולה."
+        ];
+        
+        let t = `${u.name}, ניתוח הממצאים מעיד על כך שהאנרגיה הדומיננטית שלך היא ${colors[topIdx]}.\nסגנון זה מאופיין ב${traits[topIdx]}\n\n`;
+        
+        if(u.strengths.length) {
+            t += `בתחום החוזקות האישיות (VANex), בולטות היכולות: ${u.strengths.join(', ')}. שילוב זה מאפשר לך להביא ערך מוסף משמעותי לצוות.\n\n`;
+        }
+        
+        t += `במצבי קונפליקט, הנטייה שלך משלבת בין מקורות הכוח האישיים לבין הצורך בקידום המשימה, תוך שמירה על איזון מקצועי.`;
+        
+        document.getElementById('analysisContent').innerText = t;
+    }
+
+    function updateChart(id, data, colors, type) {
+        if (charts[id]) charts[id].destroy();
+        const ctx = document.getElementById(id).getContext('2d');
+        
+        charts[id] = new Chart(ctx, {
+            type: type,
+            data: { 
+                labels: type === 'bar' ? ['יחסי אנוש', 'פורמלית', 'מקצועית', 'הזדהות', 'ערכים'] : [],
+                datasets: [{ 
+                    data: data, 
+                    backgroundColor: colors, 
+                    borderRadius: type === 'bar' ? 6 : 0,
+                    borderWidth: 1
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: type === 'bar' ? { 
+                    y: { beginAtZero: true, max: 40, ticks: { display: false }, grid: { display: false } },
+                    x: { grid: { display: false } }
+                } : {}
+            }
+        });
+    }
+
+    function calculateGroup() {
+        if(!allData.length) return;
+        let s = {l:[0,0,0,0], c:[0,0,0,0,0], p:[0,0,0,0,0]};
+        allData.forEach(u => {
+            u.lumina.forEach((v,i) => s.l[i]+=v);
+            u.conflict.forEach((v,i) => s.c[i]+=v);
+            u.power.forEach((v,i) => s.p[i]+=v);
+        });
+        const n = allData.length;
+        render({
+            name: "הקבוצה", 
+            lumina: s.l.map(v=>v/n), 
+            conflict: s.c.map(v=>v/n), 
+            power: s.p.map(v=>v/n), 
+            strengths: ["סינרגיה צוותית", "חזון משותף", "עבודת צוות"]
+        }, true);
+    }
+</script>
+</body>
+</html>
+          </body>
+        </html>
