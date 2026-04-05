@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+        <html>
+          <head>
+            <title data-id="th-modified">Web Page</title>
+            
+          <meta property="og:title" content="Web Page" data-id="th-modified" ><meta name="description" content="code" data-id="th-modified" ><meta property="og:description" content="code" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:url" content="https://turquoise-matti-78.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="turquoise-matti-78.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+          <body>
+            <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -85,7 +92,7 @@
             .footer-credits { color: black !important; border-top: 1px solid #000; }
         }
     </style>
-<meta property="og:title" content="WEMPACT - שאלון זיהוי מקורות כוח" data-id="th-modified"><meta property="og:image" content="https://powerwempact.tiiny.site/og-image.jpeg" data-id="th-modified"><meta property="og:url" content="https://powerwempact.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="powerwempact.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
+</head>
 <body>
 
     <div id="scr-login" class="container">
@@ -270,6 +277,9 @@
         }
 
         function showResults() {
+            // הקישור שסיפקת מוטמע כאן
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzgfbyip4kHRWwh_9aeRyXkg_qSmfs2HVDOMn3F9EV9dGEZ9IifaEUO75QrMmgqZR0ERA/exec';
+
             document.getElementById('scr-pre-end').classList.add('hidden');
             document.getElementById('scr-res').classList.remove('hidden');
             document.getElementById('res-user').innerText = uName;
@@ -282,6 +292,28 @@
             });
 
             const totalSum = finalScores.reduce((a, b) => a + b, 0);
+            
+            // הכנת הנתונים למשלוח לפי סדר העמודות שביקשת (A-G)
+            const resultsData = {
+                name: uName,
+                values: ((finalScores[3] / totalSum) * 100).toFixed(1) + "%",         // עמודה C: ערכים
+                relations: ((finalScores[2] / totalSum) * 100).toFixed(1) + "%",      // עמודה D: יחסי אנוש
+                professional: ((finalScores[1] / totalSum) * 100).toFixed(1) + "%",   // עמודה E: סמכות מקצועית
+                formal: ((finalScores[0] / totalSum) * 100).toFixed(1) + "%",         // עמודה F: סמכות פורמאלית
+                identification: ((finalScores[4] / totalSum) * 100).toFixed(1) + "%"  // עמודה G: הזדהות
+            };
+
+            // שליחת הנתונים ל-Google Sheets
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                body: JSON.stringify(resultsData)
+            })
+            .then(() => console.log('הנתונים נשלחו בהצלחה ל-WEMPACT Dashboard'))
+            .catch(error => console.error('שגיאה בשליחת הנתונים:', error));
+
+            // הצגת התוצאות למשתמש על המסך (סידור מהגבוה לנמוך)
             const sorted = finalScores.map((v, i) => ({ name: powerLabels[i], val: v }))
                                      .sort((a, b) => b.val - a.val);
 
@@ -297,3 +329,5 @@
     </script>
 </body>
 </html>
+          </body>
+        </html>
