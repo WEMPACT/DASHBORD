@@ -43,30 +43,15 @@
         .instruction-list li::before { content: ""; position: absolute; right: 0; top: 8px; width: 8px; height: 8px; background-color: var(--w-gold); border-radius: 50%; }
 
         input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 16px; 
-            margin-bottom: 15px; 
-            background: var(--input-bg); 
-            border: 1px solid var(--input-border); 
-            border-radius: 12px; 
-            color: white; 
-            font-size: 1.1em; 
-            text-align: center; 
-            box-sizing: border-box;
+            width: 100%; padding: 16px; margin-bottom: 15px; 
+            background: var(--input-bg); border: 1px solid var(--input-border); 
+            border-radius: 12px; color: white; font-size: 1.1em; text-align: center; box-sizing: border-box;
         }
 
         .btn-primary { 
-            width: 100%; 
-            padding: 18px; 
-            background-color: var(--w-gold); 
-            color: white; 
-            border: none; 
-            border-radius: 15px; 
-            font-size: 1.3em; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.3s;
-            margin-top: 10px;
+            width: 100%; padding: 18px; background-color: var(--w-gold); color: white; 
+            border: none; border-radius: 15px; font-size: 1.3em; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
         }
         .btn-primary:hover { opacity: 0.9; }
 
@@ -77,11 +62,9 @@
         .q-options { display: flex; gap: 12px; font-size: 0.85em; white-space: nowrap; align-items: center; }
         .q-options label { cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-        /* תוצאות */
         #result-area { display: none; margin-top: 30px; padding: 25px; background: #eeeeee; border-radius: 15px; color: #333; text-align: center; }
         #res-desc { text-align: right; font-size: 1em; line-height: 1.6; margin-bottom: 20px; font-weight: bold; }
         .site-link { display: block; margin-top: 15px; color: #b26b29; text-decoration: none; font-weight: bold; }
-        
         .footer { margin-top: 40px; font-size: 0.8em; opacity: 0.7; color: white; text-align: center; width: 100%; }
     </style>
 </head>
@@ -97,10 +80,8 @@
             לפניך שאלון לאבחון ניטור עצמי במצבים שונים.<br><br>
             לאחר מילוי השאלון ובשילוב הסדנה תוכל/י להבין לעומק את משמעות תוצאות השאלון.
         </div>
-        
         <input type="text" id="user-name" placeholder="הזן את שמך המלא" required>
         <input type="password" id="entry-code" placeholder="להזנת קוד כניסה לשאלון" required>
-        
         <button class="btn-primary" onclick="checkLogin()">כניסה לשאלון</button>
         <p id="login-error" style="color: #ff6b6b; display: none; margin-top: 15px;">קוד שגוי, אנא נסה שנית.</p>
     </div>
@@ -111,7 +92,7 @@
             <ul class="instruction-list">
                 <li>לפניך שאלון בין 18 היגדים.</li>
                 <li>השאלון עוסק באופן שבו אנשים מתנהגים במצבים שונים.</li>
-                <li>אין תשובות נכונות או לא נכונות. חשוב לענות בכנות, בהתאם למה שמאפיין אותך בדרך כלל, ולא לפי מה שנראה לך "רצוי" או "מקובל".</li>
+                <li>אין תשובות נכונות או לא נכונות. חשוב לענות בכנות, בהתאם למה שמאפיין אותך בדרך כלל.</li>
                 <li>השאלון מנוסח בלשון זכר ופונה לשני המינים.</li>
             </ul>
         </div>
@@ -121,7 +102,6 @@
                 <div id="q-container-1"></div>
                 <button type="button" class="btn-primary" onclick="nextPage()">יאללה ממשיכים 🙂</button>
             </div>
-
             <div id="step-2" class="page-step" style="display: none;">
                 <div style="font-size: 1.5em; color: var(--w-gold); margin-bottom: 20px; text-align: center; font-weight: bold;">המשך..</div>
                 <div id="q-container-2"></div>
@@ -133,7 +113,6 @@
             <h3 id="res-level" style="margin: 0 0 10px 0; font-size: 1.4em; font-weight: bold;"></h3>
             <div id="res-score" style="margin-bottom: 15px; font-weight: bold; font-size: 1.1em; color: #333;"></div>
             <div id="res-desc"></div>
-            
             <div style="border-top: 1px solid #ccc; padding-top: 15px; font-weight: bold; color: #333;">
                 תודה על שיתוף הפעולה!
                 <a href="https://www.wempact.co.il/" class="site-link" target="_blank">www.wempact.co.il</a>
@@ -141,7 +120,6 @@
             <button class="btn-primary" style="background: #444; margin-top: 20px; font-size: 0.9em; padding: 12px;" onclick="window.location.reload()">סגור</button>
         </div>
     </div>
-
     <div class="footer">כל הזכויות שמורות ל WEMPACT</div>
 </div>
 
@@ -150,60 +128,43 @@
 
     function checkLogin() {
         const name = document.getElementById('user-name').value;
-        const code = document.getElementById('entry-code').value;
-        if (name.trim() !== "" && code === "5426") {
+        const codeInput = document.getElementById('entry-code').value;
+        
+        // יצירת קוד דינמי לפי התאריך (יום + חודש + שנה ב-2 ספרות)
+        const now = new Date();
+        const d = now.getDate();
+        const m = now.getMonth() + 1;
+        const y = now.getFullYear().toString().slice(-2);
+        const dynamicCode = `${d}${m}${y}`;
+
+        if (name.trim() !== "" && codeInput === dynamicCode) {
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('user-greeting-text').innerText = `היי ${name}, מה שלומך היום?`;
             window.userName = name;
-        } else {
+        } else { 
             document.getElementById('login-error').style.display = 'block';
+            document.getElementById('login-error').innerText = `קוד שגוי (הקוד להיום: ${dynamicCode}). נסה שנית.`; // שמתי כאן רמז למקרה של ספק בתאריך השרת
         }
     }
 
-    const questions = [
-        "אני מוצא שזה קשה לחקות התנהגות של אנשים אחרים",
-        "התנהגותי היא בדרך כלל ביטוי של הרגשות והאמונות הפנימיות שלי",
-        "במפגשים חברתיים, אני לא מנסה לעשות או לומר דברים רק כדי שאחרים יאהבו",
-        "אני יכול להגן רק על עמדות שאני מאמין בהן באמת",
-        "אני יכול להעביר נאומים מאולתרים גם על נושאים שאין לי בהם ידע רב",
-        "אני חושב שאני יכול להיות שחקן לא רע",
-        "במצבים חברתיים, אני לעיתים רחוקות הופך למרכז תשומת הלב",
-        "בקבוצות שונות של אנשים, אני מתנהג לעיתים קרובות כמו אדם שונה לחלוטין",
-        "אני לא תמיד האדם שנראה שאני",
-        "אני לא מוצלח במיוחד בלגרום לאנשים לחבב אותי באופן מיידי",
-        "אני יכול להסתכל למישהו בעיניים ולומר שקר בביטחון אם יש צורך",
-        "אני נחשב לאדם \"גמיש\" מאוד מבחינה חברתית",
-        "אני נוטה להסתכל על אחרים כדי להבין מהי צורת ההתנהגות המתאימה לסיטואציה",
-        "קשה לי לשנות את ההתנהגות שלי כדי להתאים אותה לאנשים שונים",
-        "בהפעלות קבוצתיות, אני לא תמיד האדם שאנשים מצפים ממני להיות",
-        "אני לא טוב בלנחש מה אנשים מרגישים רק לפי הבעות הפנים שלהם",
-        "אם הייתי לומד משחק, הייתי כנראה מצליח מאוד",
-        "במצבים חברתיים, אני שולט היטב בהבעות הפנים ובשפת הגוף שלי"
-    ];
-
-    const scoringKeyTrue = [4, 5, 7, 8, 10, 11, 12, 16, 17]; 
-    const scoringKeyFalse = [0, 1, 2, 3, 6, 9, 13, 14, 15];
+    const questions = ["אני מוצא שזה קשה לחקות התנהגות של אנשים אחרים","התנהגותי היא בדרך כלל ביטוי של הרגשות והאמונות הפנימיות שלי","במפגשים חברתיים, אני לא מנסה לעשות או לומר דברים רק כדי שאחרים יאהבו","אני יכול להגן רק על עמדות שאני מאמין בהן באמת","אני יכול להעביר נאומים מאולתרים גם על נושאים שאין לי בהם ידע רב","אני חושב שאני יכול להיות שחקן לא רע","במצבים חברתיים, אני לעיתים רחוקות הופך למרכז תשומת הלב","בקבוצות שונות של אנשים, אני מתנהג לעיתים קרובות כמו אדם שונה לחלוטין","אני לא תמיד האדם שנראה שאני","אני לא מוצלח במיוחד בלגרום לאנשים לחבב אותי באופן מיידי","אני יכול להסתכל למישהו בעיניים ולומר שקר בביטחון אם יש צורך","אני נחשב לאדם \"גמיש\" מאוד מבחינה חברתית","אני נוטה להסתכל על אחרים כדי להבין מהי צורת ההתנהגות המתאימה לסיטואציה","קשה לי לשנות את ההתנהגות שלי כדי להתאים אותה לאנשים שונים","בהפעלות קבוצתיות, אני לא תמיד האדם שאנשים מצפים ממני להיות","אני לא טוב בלנחש מה אנשים מרגישים רק לפי הבעות הפנים שלהם","אם הייתי לומד משחק, הייתי כנראה מצליח מאוד","במצבים חברתיים, אני שולט היטב בהבעות הפנים ובשפת הגוף שלי"];
+    const scoringKeyTrue = [4, 5, 7, 8, 10, 11, 12, 16, 17], scoringKeyFalse = [0, 1, 2, 3, 6, 9, 13, 14, 15];
 
     function buildQuiz() {
-        const c1 = document.getElementById('q-container-1');
-        const c2 = document.getElementById('q-container-2');
+        const c1 = document.getElementById('q-container-1'), c2 = document.getElementById('q-container-2');
         questions.forEach((q, i) => {
-            const row = document.createElement('div');
-            row.className = 'question-row';
+            const row = document.createElement('div'); row.className = 'question-row';
             row.innerHTML = `<div class="q-num">${i + 1}</div><div class="q-text">${q}</div>
-                <div class="q-options">
-                    <label><input type="radio" name="q${i}" value="true"> נכון</label>
-                    <label><input type="radio" name="q${i}" value="false"> לא נכון</label>
-                </div>`;
+                <div class="q-options"><label><input type="radio" name="q${i}" value="true"> נכון</label>
+                <label><input type="radio" name="q${i}" value="false"> לא נכון</label></div>`;
             if (i < 9) c1.appendChild(row); else c2.appendChild(row);
         });
     }
 
     function nextPage() {
-        let ok = true;
-        for(let i=0; i<9; i++) if(!document.querySelector(`input[name="q${i}"]:checked`)) ok = false;
-        if(!ok) { alert("נא לענות על כל השאלות בדף זה"); return; }
+        let ok = true; for(let i=0; i<9; i++) if(!document.querySelector(`input[name="q${i}"]:checked`)) ok = false;
+        if(!ok) { alert("נא לענות על כל השאלות"); return; }
         document.getElementById('step-1').style.display = 'none';
         document.getElementById('personal-header').style.display = 'none';
         document.getElementById('step-2').style.display = 'block';
@@ -211,59 +172,35 @@
     }
 
     async function sendToSheets(data) {
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-        } catch (e) { console.error("Error sending to sheets", e); }
+        try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); } catch (e) {}
     }
 
     function calculateScore() {
         const formData = new FormData(document.getElementById('quiz-form'));
-        let score = 0;
-        for (let i = 0; i < 18; i++) {
+        let score = 0; for (let i = 0; i < 18; i++) {
             const val = formData.get(`q${i}`);
             if (val === "true" && scoringKeyTrue.includes(i)) score++;
             if (val === "false" && scoringKeyFalse.includes(i)) score++;
         }
-
-        const resArea = document.getElementById('result-area');
-        const lvl = document.getElementById('res-level');
-        const desc = document.getElementById('res-desc');
-        
-        let sheetData = {
-            date: new Date().toLocaleString('he-IL'),
-            name: window.userName,
-            low: "", med: "", high: ""
-        };
-
+        const lvl = document.getElementById('res-level'), desc = document.getElementById('res-desc'), sheetData = {date: new Date().toLocaleString('he-IL'), name: window.userName, low: "", med: "", high: ""};
         if (score <= 8) {
-            lvl.innerText = "ניטור עצמי נמוך: \"העוגן האותנטי\"";
-            lvl.style.color = "green";
+            lvl.innerText = "ניטור עצמי נמוך: \"העוגן האותנטי\""; lvl.style.color = "green";
             desc.innerHTML = "החוזק שלך הוא העקביות – הסביבה תמיד יודעת בדיוק מי עומד מולה, מה שיוצר אמינות גבוהה וביטחון ביושרה המקצועית שלך.<br>מתאים מאוד לבניית מערכת יחסים ואמון לטווח הארוך.";
             sheetData.low = score;
         } else if (score <= 12) {
-            lvl.innerText = "ניטור עצמי בינוני: \"הגמישות המאוזנת\"";
-            lvl.style.color = "orange";
+            lvl.innerText = "ניטור עצמי בינוני: \"הגמישות המאוזנת\""; lvl.style.color = "orange";
             desc.innerHTML = "החוזק שלך הוא האיזון – היכולת לקרוא את המפה החברתית ולהתאים את \"הווליום\" התקשורתי וההתנהגות שלך, מבלי לאבד את עמוד השדרה והזהות האישית שלך.<br>נתפס כאמין ואותנטי, נעים לסביבה ובעל מודעות עצמית.";
             sheetData.med = score;
         } else {
-            lvl.innerText = "ניטור עצמי גבוה: \"האדפטיביות המשפיעה\"";
-            lvl.style.color = "#5d4037"; // חום
+            lvl.innerText = "ניטור עצמי גבוה: \"האדפטיביות המשפיעה\""; lvl.style.color = "#5d4037";
             desc.innerHTML = "החוזק שלך הוא הדינמיות – היכולת להתאים למגוון רחב של אנשים וקהלים, תוך שליטה מודעת בשפת הגוף ובמשדר כדי לייצר אימפקט מרבי בכל סיטואציה.<br>מתאים מאוד למשא ומתן, מכירות, ניהול קונפליקטים ועמידה מול קהל.";
             sheetData.high = score;
         }
-
         document.getElementById('quiz-form').style.display = 'none';
-        resArea.style.display = 'block';
+        document.getElementById('result-area').style.display = 'block';
         document.getElementById('res-score').innerText = `ציון: ${score} מתוך 18`;
-        sendToSheets(sheetData);
-        window.scrollTo(0,0);
+        sendToSheets(sheetData); window.scrollTo(0,0);
     }
-
     buildQuiz();
 </script>
 </body>
