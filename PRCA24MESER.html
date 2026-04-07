@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEMPACT | אבחון חוסן תקשורתי</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wempact-dark: #050a1b; 
+            --wempact-blue: #185adb;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: linear-gradient(135deg, #050a1b, #0c1b3d);
+            margin: 0; padding: 0; color: #333; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .top-logo { position: fixed; top: 20px; left: 20px; text-align: left; color: white; z-index: 1000; }
+        .logo-main { font-weight: bold; font-size: 1.4em; letter-spacing: 1px; }
+        .logo-sub { font-size: 0.7em; opacity: 0.8; line-height: 1.2; }
+
+        .card {
+            background: var(--white); width: 95%; max-width: 650px; padding: 40px;
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: right; position: relative;
+        }
+
+        .progress-container { width: 100%; height: 4px; background: #eee; margin-bottom: 35px; position: relative; direction: rtl; }
+        .progress-bar { height: 100%; background: var(--wempact-blue); width: 0%; transition: 0.3s; float: right; }
+        .runner { position: absolute; top: -28px; right: 0%; font-size: 22px; transition: 0.3s; transform: translateX(50%); }
+
+        h2 { color: var(--wempact-dark); margin-bottom: 20px; text-align: right; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-family: 'Assistant', sans-serif; }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; transform: scale(1.01); } 100% { opacity: 1; } }
+        .btn { background: var(--wempact-blue); color: white; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-size: 1.1em; font-weight: 600; display: block; margin: 20px auto; }
+        .btn-blink { animation: blink 1.5s infinite; }
+
+        .options-container { display: flex; justify-content: space-between; margin: 30px 0; direction: ltr; }
+        .option-circle { width: 50px; height: 50px; border: 2px solid var(--wempact-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
+        .option-circle:hover { background: var(--wempact-blue); color: white; }
+
+        .result-box { background: #f8f9fa; padding: 12px; margin-bottom: 8px; border-right: 5px solid var(--wempact-blue); }
+        .scale-bar { display: flex; height: 25px; border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        .scale-part { flex: 1; text-align: center; font-size: 0.8em; color: white; padding-top: 4px; font-weight: bold; }
+
+        #loginPage, #introPage, #surveyPage, #finishBanner, #resultsPage { display: none; }
+        .active { display: block !important; }
+        .footer-credits { text-align: center; font-size: 0.8em; margin-top: 30px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <div class="top-logo">
+        <div class="logo-main">WEMPACT</div>
+        <div class="logo-sub">פיתוח ארגונים | צוותים | מנהלים</div>
+    </div>
+
+    <div id="loginPage" class="card active">
+        <h2>שלום רב</h2>
+        <p>לפניך שאלון לניתוח החוסן התקשורתי שלך<br>לאחר מילוי השאלון ובשילוב עם הסדנה, תוכלי/י להבין את משמעות התוצאות</p>
+        <input type="text" id="userName" placeholder="שם">
+        <input type="password" id="entryCode" placeholder="קוד כניסה">
+        <button class="btn btn-blink" onclick="validateLogin()">מתחילים</button>
+    </div>
+
+    <div id="introPage" class="card">
+        <h2 id="welcomeMsg"></h2>
+        <p>1. לפניך שאלון עם 24 היגדים</p>
+        <p>2. שאלון זה הוא כלי מחקרי מתוקף המודד את רמת הביטחון והחרדה במצבי תקשורת שונים</p>
+        <p style="white-space: nowrap;">3. בכל היגד עליך לסמן 1-5 (1 - הכי פחות מאפיין, 5 - מאפיין במידה רבה)</p>
+        <p>4. אין סגנון טוב או רע, המטרה היא לקבל מיפוי אישי אובייקטיבי</p>
+        <p>5. השאלון מנוסח בלשון זכר ופונה לשני המינים</p>
+        <button class="btn" onclick="startSurvey()">הבנתי, בואו נתחיל</button>
+    </div>
+
+    <div id="surveyPage" class="card">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="runner" id="runner">🏃</div>
+        </div>
+        <h3 id="questionText" style="min-height: 80px; text-align: center;"></h3>
+        <div class="options-container">
+            <div class="option-circle" onclick="nextQuestion(1)">1</div>
+            <div class="option-circle" onclick="nextQuestion(2)">2</div>
+            <div class="option-circle" onclick="nextQuestion(3)">3</div>
+            <div class="option-circle" onclick="nextQuestion(4)">4</div>
+            <div class="option-circle" onclick="nextQuestion(5)">5</div>
+        </div>
+        <p id="stepCounter" style="text-align: center; font-size: 0.9em; color: #666;"></p>
+    </div>
+
+    <div id="finishBanner" class="card" style="text-align: center;">
+        <h1>כל הכבוד, סיימת!</h1>
+        <p id="savingStatus">התשובות שלך נשלחות למערכת...</p>
+        <button id="resultsBtn" class="btn btn-blink" onclick="showFinalResults()" style="display:none;">לתוצאות 😊</button>
+    </div>
+
+    <div id="resultsPage" class="card" style="max-width: 850px;">
+        <h2 style="text-align: center;">סיכום התוצאות</h2>
+        <div id="resultsContent"></div>
+        <h4 style="margin: 20px 0 5px 0;">מקרא טווחי ציונים (לכל תחום - מקסימום 30):</h4>
+        <div class="scale-bar">
+            <div class="scale-part" style="background: #27ae60;">6-14 (חוסן גבוה)</div>
+            <div class="scale-part" style="background: #f39c12;">15-24 (בינוני)</div>
+            <div class="scale-part" style="background: #c0392b;">25-30 (צורך בשיפור)</div>
+        </div>
+        <div id="finalSummary" style="background: #f1f4f9; padding: 18px; border-radius: 12px; margin-top: 20px; border-right: 4px solid var(--wempact-blue);"></div>
+        <h4 style="margin: 25px 0 5px 0;">סרגל ציון כולל (PRCA-24):</h4>
+        <div class="scale-bar" style="height: 35px;">
+            <div class="scale-part" style="background: #27ae60; flex: 1.5; padding-top: 8px;">24-50 (חוסן גבוה)</div>
+            <div class="scale-part" style="background: #f39c12; flex: 2; padding-top: 8px;">51-80 (ממוצע)</div>
+            <div class="scale-part" style="background: #c0392b; flex: 2.5; padding-top: 8px;">81-120 (חרדה גבוהה)</div>
+        </div>
+        <p style="text-align: center; font-weight: bold; margin-top: 25px;">תודה על שיתוף הפעולה!</p>
+        <div class="footer-credits">כל הזכויות שמורות ל-WEMPACT ©</div>
+    </div>
+
+<script>
+    // --- ה-URL המעודכן שסיפקת ---
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzFD0PY3qb0GysN6D2Hrfm2xjRbNTIZHDB0TM6aRiMo55istIGFYFfEUe5Cv6Eco1qS/exec"; 
+
+    let currentStep = 0; let userAnswers = []; let userName = "";
+    const rawQuestions = [
+        { id: 1, cat: 'groups', text: "אני מרגיש נינוח ורגוע בזמן שאני משתתף בדיון קבוצתי", type: '+' },
+        { id: 2, cat: 'groups', text: "אני לא פוחד להביע את דעתי בדיונים קבוצתיים", type: '+' },
+        { id: 3, cat: 'groups', text: "אני נוטה להיות מתוח וחסר מנוחה בזמן השתתפות בדיונים קבוצתיים", type: '-' },
+        { id: 4, cat: 'groups', text: "השתתפות בדיונים קבוצתיים גורמת לי להרגיש חוסר נוחות", type: '-' },
+        { id: 5, cat: 'groups', text: "אני מרגיש בטוח בעצמי כשאני מדבר בדיון קבוצתי", type: '+' },
+        { id: 6, cat: 'groups', text: "אני משתתף בדיונים קבוצתיים בביטחון וללא חשש", type: '+' },
+        { id: 7, cat: 'meetings', text: "בדרך כלל אני מרגיש עצבני כשאני צריך להשתתף בפגישה/ישיבה", type: '-' },
+        { id: 8, cat: 'meetings', text: "אני מרגיש בנוח לדבר בישיבה או בפגישה", type: '+' },
+        { id: 9, cat: 'meetings', text: "אני פוחד להביע את דעתי בישיבות, גם אם אני יודע שאני צודק", type: '-' },
+        { id: 10, cat: 'meetings', text: "אני מרגיש נינוח ורגוע כשאני נקרא לדבר בישיבה", type: '+' },
+        { id: 11, cat: 'meetings', text: "בדרך כלל אני נמנע מלדבר בישיבות אלא אם כן אני חייב", type: '-' },
+        { id: 12, cat: 'meetings', text: "אני מרגיש מאוד בטוח בעצמי כשאני מדבר בישיבה או פגישה", type: '+' },
+        { id: 13, cat: 'interpersonal', text: "אני מרגיש נינוח ורגוע בזמן שיחה עם אדם אחר", type: '+' },
+        { id: 14, cat: 'interpersonal', text: "אני פוחד לדבר עם אנשים שאיני מכיר היטב", type: '-' },
+        { id: 15, cat: 'interpersonal', text: "אני מרגיש מאוד בטוח בעצמי בזמן שיחה עם אדם אחר", type: '+' },
+        { id: 16, cat: 'interpersonal', text: "ישנם רגעים בשיחה שבהם אני מרגיש מתוח וחסר נוחות", type: '-' },
+        { id: 17, cat: 'interpersonal', text: "אין לי שום בעיה להתחיל שיחה עם אדם זר", type: '+' },
+        { id: 18, cat: 'interpersonal', text: "בזמן שיחה עם אדם אחר אני נהיה כל כך עצבני שאני שוכח מה רציתי להגיד", type: '-' },
+        { id: 19, cat: 'public', text: "אני מרגיש נינוח ורגוע בזמן שאני נושא דברים בפני קהל", type: '+' },
+        { id: 20, cat: 'public', text: "הגוף שלי מרגיש מתוח ונוקשה כשאני עומד ונושא דברים מול קהל", type: '-' },
+        { id: 21, cat: 'public', text: "אני נהנה מהחוויה של העברת מסר או נאום מול קהל", type: '+' },
+        { id: 22, cat: 'public', text: "המחשבות שלי הופכות למבולבלות כשאני עומד מול קהל וצריך לדבר", type: '-' },
+        { id: 23, cat: 'public', text: "אני מרגיש בטוח בעצמי וביכולות שלי בזמן שאני מדבר מול קהל", type: '+' },
+        { id: 24, cat: 'public', text: "בזמן שאני מדבר מול קהל אני חווה פחד עד כדי כך שאני שוכח מה רציתי להגיד", type: '-' }
+    ];
+
+    const shuffledQuestions = [...rawQuestions].sort(() => Math.random() - 0.5);
+
+    function validateLogin() {
+        const d = new Date(); const code = `${d.getDate()}${d.getMonth()+1}${d.getFullYear().toString().slice(-2)}`;
+        userName = document.getElementById('userName').value;
+        if (userName.length < 2) return alert("נא להזין שם");
+        if (document.getElementById('entryCode').value !== code) return alert("קוד שגוי");
+        document.getElementById('loginPage').classList.remove('active');
+        document.getElementById('introPage').classList.add('active');
+        document.getElementById('welcomeMsg').innerText = `הי ${userName}, מה שלומך היום?`;
+    }
+
+    function startSurvey() { document.getElementById('introPage').classList.remove('active'); document.getElementById('surveyPage').classList.add('active'); showQuestion(); }
+
+    function showQuestion() {
+        const q = shuffledQuestions[currentStep]; document.getElementById('questionText').innerText = q.text;
+        document.getElementById('stepCounter').innerText = `שאלה ${currentStep + 1} מתוך 24`;
+        const pct = (currentStep / 24) * 100; document.getElementById('progressBar').style.width = pct + "%";
+        document.getElementById('runner').style.right = pct + "%";
+    }
+
+    function nextQuestion(val) {
+        userAnswers.push({ ...shuffledQuestions[currentStep], score: val }); currentStep++;
+        if (currentStep < 24) showQuestion();
+        else { 
+            document.getElementById('surveyPage').classList.remove('active'); 
+            document.getElementById('finishBanner').classList.add('active');
+            sendDataToSheet();
+        }
+    }
+
+    function sendDataToSheet() {
+        let scores = { groups: 18, meetings: 18, interpersonal: 18, public: 18 };
+        userAnswers.forEach(a => { if (a.type === '+') scores[a.cat] -= a.score; else scores[a.cat] += a.score; });
+        const total = scores.groups + scores.meetings + scores.interpersonal + scores.public;
+
+        const formData = new URLSearchParams();
+        formData.append('name', userName);
+        formData.append('groups', scores.groups);
+        formData.append('meetings', scores.meetings);
+        formData.append('interpersonal', scores.interpersonal);
+        formData.append('public', scores.public);
+        formData.append('total', total);
+
+        fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        }).then(() => {
+            document.getElementById('resultsBtn').style.display = "block";
+            document.getElementById('savingStatus').innerText = "הנתונים נשמרו בהצלחה!";
+        }).catch(err => {
+            console.error("Error:", err);
+            document.getElementById('resultsBtn').style.display = "block";
+            document.getElementById('savingStatus').innerText = "שגיאה בחיבור, אך ניתן לצפות בתוצאות";
+        });
+    }
+
+    function showFinalResults() {
+        document.getElementById('finishBanner').classList.remove('active'); document.getElementById('resultsPage').classList.add('active');
+        let scores = { groups: 18, meetings: 18, interpersonal: 18, public: 18 };
+        userAnswers.forEach(a => { if (a.type === '+') scores[a.cat] -= a.score; else scores[a.cat] += a.score; });
+        const total = scores.groups + scores.meetings + scores.interpersonal + scores.public;
+        const catMap = { groups: "דיונים בקבוצה", meetings: "ישיבות פורמליות", interpersonal: "שיחות אישיות", public: "מול קהל" };
+        let strong = [], toWorkOn = [], html = "";
+        
+        for (let c in scores) {
+            let status = scores[c] < 15 ? "חזק" : (scores[c] > 24 ? "דורש עבודה" : "בינוני");
+            if (scores[c] < 15) strong.push(catMap[c]);
+            else toWorkOn.push(catMap[c]);
+            html += `<div class="result-box"><b>${catMap[c]}:</b> ציון ${scores[c]} (${status})</div>`;
+        }
+
+        document.getElementById('resultsContent').innerHTML = html;
+        document.getElementById('finalSummary').innerHTML = `
+            שלום <b>${userName}</b>, הציון הכולל שלך הוא <b>${total}</b>.<br><br>
+            ככל שהציון נמוך יותר, החוסן התקשורתי נחשב גבוה יותר.<br>
+            אצלך האזורים החזקים הם: <b>${strong.join(', ') || 'בתהליך למידה'}</b>.<br><br>
+            <b>כדי להשפיע יותר ולהשיג את המטרות שלך, כדאי לעבוד על:</b> <b>${toWorkOn.join(', ')}</b>.
+        `;
+    }
+</script>
+</body>
+</html>
