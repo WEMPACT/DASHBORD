@@ -26,7 +26,7 @@
         .card {
             background: var(--white); width: 95%; max-width: 650px; padding: 40px;
             border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            text-align: right; position: relative;
+            text-align: right; position: relative; box-sizing: border-box;
         }
 
         .progress-container { width: 100%; height: 4px; background: #eee; margin-bottom: 35px; position: relative; direction: rtl; }
@@ -41,7 +41,7 @@
         .btn-blink { animation: blink 1.5s infinite; }
 
         .options-container { display: flex; justify-content: space-between; margin: 30px 0; direction: ltr; }
-        .option-circle { width: 50px; height: 50px; border: 2px solid var(--wempact-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
+        .option-circle { width: 45px; height: 45px; border: 2px solid var(--wempact-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
         .option-circle:hover { background: var(--wempact-blue); color: white; }
 
         .result-box { background: #f8f9fa; padding: 12px; margin-bottom: 8px; border-right: 5px solid var(--wempact-blue); }
@@ -50,6 +50,16 @@
 
         #loginPage, #introPage, #surveyPage, #finishBanner, #resultsPage { display: none; }
         .active { display: block !important; }
+        
+        .instruction-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .instruction-table td { vertical-align: top; padding-bottom: 12px; font-size: 1.05em; line-height: 1.4; text-align: right; }
+        .num-col { width: 25px; font-weight: bold; color: var(--wempact-blue); }
+
+        @media (max-width: 600px) {
+            .card { padding: 25px; }
+            .instruction-table td { font-size: 0.9em; }
+            .option-circle { width: 38px; height: 38px; }
+        }
         .footer-credits { text-align: center; font-size: 0.8em; margin-top: 30px; color: #777; }
     </style>
 </head>
@@ -62,7 +72,7 @@
 
     <div id="loginPage" class="card active">
         <h2>שלום רב</h2>
-        <p>לפניך שאלון לניתוח החוסן התקשורתי שלך<br>לאחר מילוי השאלון ובשילוב עם הסדנה, תוכלי/י להבין את משמעות התוצאות</p>
+        <p>לפניך שאלון לניתוח החוסן התקשורתי שלך.<br>לאחר מילוי השאלון ובשילוב עם הסדנה, תוכלי/י להבין את משמעות התוצאות.</p>
         <input type="text" id="userName" placeholder="שם">
         <input type="password" id="entryCode" placeholder="קוד כניסה">
         <button class="btn btn-blink" onclick="validateLogin()">מתחילים</button>
@@ -70,11 +80,13 @@
 
     <div id="introPage" class="card">
         <h2 id="welcomeMsg"></h2>
-        <p>1. לפניך שאלון עם 24 היגדים</p>
-        <p>2. שאלון זה הוא כלי מחקרי מתוקף המודד את רמת הביטחון והחרדה במצבי תקשורת שונים</p>
-        <p style="white-space: nowrap;">3. בכל היגד עליך לסמן 1-5 (1 - הכי פחות מאפיין, 5 - מאפיין במידה רבה)</p>
-        <p>4. אין סגנון טוב או רע, המטרה היא לקבל מיפוי אישי אובייקטיבי</p>
-        <p>5. השאלון מנוסח בלשון זכר ופונה לשני המינים</p>
+        <table class="instruction-table">
+            <tr><td class="num-col">1.</td><td>לפניך שאלון עם 24 היגדים.</td></tr>
+            <tr><td class="num-col">2.</td><td>שאלון זה הוא כלי מחקרי מתוקף המודד את רמת הביטחון במצבי תקשורת שונים.</td></tr>
+            <tr><td class="num-col">3.</td><td>בכל היגד עליך לסמן 1-5 (1 - הכי פחות מאפיין, 5 - מאפיין במידה רבה).</td></tr>
+            <tr><td class="num-col">4.</td><td>אין סגנון טוב או רע, המטרה היא לקבל מיפוי אישי אובייקטיבי.</td></tr>
+            <tr><td class="num-col">5.</td><td>השאלון מנוסח בלשון זכר ופונה לשני המינים.</td></tr>
+        </table>
         <button class="btn" onclick="startSurvey()">הבנתי, בואו נתחיל</button>
     </div>
 
@@ -83,7 +95,7 @@
             <div class="progress-bar" id="progressBar"></div>
             <div class="runner" id="runner">🏃</div>
         </div>
-        <h3 id="questionText" style="min-height: 80px; text-align: center;"></h3>
+        <h3 id="questionText" style="min-height: 80px; text-align: center; color: var(--wempact-dark);"></h3>
         <div class="options-container">
             <div class="option-circle" onclick="nextQuestion(1)">1</div>
             <div class="option-circle" onclick="nextQuestion(2)">2</div>
@@ -121,7 +133,6 @@
     </div>
 
 <script>
-    // --- ה-URL המעודכן שסיפקת ---
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzFD0PY3qb0GysN6D2Hrfm2xjRbNTIZHDB0TM6aRiMo55istIGFYFfEUe5Cv6Eco1qS/exec"; 
 
     let currentStep = 0; let userAnswers = []; let userName = "";
@@ -155,10 +166,14 @@
     const shuffledQuestions = [...rawQuestions].sort(() => Math.random() - 0.5);
 
     function validateLogin() {
-        const d = new Date(); const code = `${d.getDate()}${d.getMonth()+1}${d.getFullYear().toString().slice(-2)}`;
-        userName = document.getElementById('userName').value;
+        const d = new Date(); 
+        const code = `${d.getDate()}${d.getMonth()+1}${d.getFullYear().toString().slice(-2)}`;
+        userName = document.getElementById('userName').value.trim();
+        const enteredCode = document.getElementById('entryCode').value.trim();
+
         if (userName.length < 2) return alert("נא להזין שם");
-        if (document.getElementById('entryCode').value !== code) return alert("קוד שגוי");
+        if (enteredCode !== code) return alert("קוד שגוי");
+        
         document.getElementById('loginPage').classList.remove('active');
         document.getElementById('introPage').classList.add('active');
         document.getElementById('welcomeMsg').innerText = `הי ${userName}, מה שלומך היום?`;
@@ -204,7 +219,6 @@
             document.getElementById('resultsBtn').style.display = "block";
             document.getElementById('savingStatus').innerText = "הנתונים נשמרו בהצלחה!";
         }).catch(err => {
-            console.error("Error:", err);
             document.getElementById('resultsBtn').style.display = "block";
             document.getElementById('savingStatus').innerText = "שגיאה בחיבור, אך ניתן לצפות בתוצאות";
         });
