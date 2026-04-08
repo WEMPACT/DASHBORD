@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEMPACT | אבחון מיומנויות למידה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --wempact-blue: #1a2a40; --secondary-blue: #3498db; --bg-light: #f4f7f6; --success-green: #2ecc71; --warning-yellow: #f1c40f; --danger-red: #e74c3c; }
+        body { font-family: 'Assistant', sans-serif; background-color: var(--bg-light); margin: 0; padding: 0; color: #333; text-align: right; }
+        
+        .logo-wrapper { position: absolute; top: 20px; left: 20px; text-align: center; z-index: 100; }
+        .logo-text { color: var(--wempact-blue); font-weight: 700; font-size: 24px; margin: 0; letter-spacing: 1px; }
+        .logo-subtext { color: var(--wempact-blue); font-size: 11px; margin: 0; font-weight: 400; border-top: 1px solid #ddd; }
+        
+        .main-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 80px 20px 20px 20px; box-sizing: border-box; }
+        .card { background: white; width: 100%; max-width: 850px; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; box-sizing: border-box; }
+        .active { display: block; }
+        
+        h2 { color: var(--wempact-blue); margin-top: 0; margin-bottom: 20px; }
+        
+        input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            font-family: inherit;
+            display: block;
+        }
+        
+        .instruction-item { margin-bottom: 15px; line-height: 1.6; padding-right: 1.2em; position: relative; text-align: right; }
+        .instruction-item::before { content: "•"; position: absolute; right: 0; font-weight: bold; }
+        
+        .question-row { padding: 25px 0; border-bottom: 1px solid #f0f0f0; text-align: right; }
+        .question-container { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 20px; }
+        .question-num { font-weight: 700; color: var(--wempact-blue); min-width: 20px; }
+        .question-text { font-weight: 600; line-height: 1.4; flex: 1; text-align: right; }
+
+        .options-row { display: flex; justify-content: space-between; direction: ltr; max-width: 500px; margin: 0 auto; padding: 10px 0; }
+        .option { display: flex; flex-direction: column; align-items: center; cursor: pointer; flex: 1; }
+        .option-num { font-weight: 700; margin-bottom: 8px; font-size: 16px; color: #666; }
+        .option input { transform: scale(1.4); cursor: pointer; }
+        
+        button { background-color: var(--wempact-blue); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; cursor: pointer; width: 100%; margin-top: 20px; font-family: inherit; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+
+        .result-box { text-align: center; padding: 20px; background: #f9f9f9; border-radius: 10px; margin-bottom: 20px; }
+        .style-score { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+        .style-name { font-weight: 700; color: var(--wempact-blue); font-size: 18px; }
+        .style-val { font-weight: 800; font-size: 32px; }
+        
+        .legend { text-align: right; margin-top: 30px; line-height: 1.6; background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+        .legend-item { margin-bottom: 12px; padding-right: 15px; border-right: 4px solid #eee; }
+        .style-desc { font-size: 14px; margin-top: 5px; color: #555; }
+        
+        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="logo-wrapper">
+    <div class="logo-text">WEMPACT</div>
+    <div class="logo-subtext">פיתוח ארגונים | צוותים | מנהלים</div>
+</div>
+
+<div class="main-wrapper">
+    <div id="step1" class="card active">
+        <h2>שלום רב,</h2>
+        <p>לפניך שאלון למיפוי מיומנויות למידה ואסטרטגיות חשיבה.</p>
+        <input type="text" id="userName" placeholder="הכנס שם מלא">
+        <input type="text" id="accessCode" placeholder="הזן קוד כניסה">
+        <button onclick="goToInstructions()">המשך/י לשאלון</button>
+    </div>
+
+    <div id="step2" class="card">
+        <h2 id="greeting"></h2>
+        <div style="margin: 30px 0;">
+            <div class="instruction-item">לפניך 15 היגדים המודדים את סגנון הלמידה שלך.</div>
+            <div class="instruction-item">השאלון מודד את הלמידה שלך ב-3 רמות: תשוקה ומוטיבציה ללמידה, עומק הלמידה (היכולת לעבד את המידע ולייצר ממנו תובנות), ורמת הביצוע - היכולת לייצר ולאפשר למידה בפועל.</div>
+            <div class="instruction-item">עליך לסמן את הספרה המתאימה בין 1 ל-7.</div>
+            <div class="instruction-item">1 מייצג "בכלל לא נכון לגביי" ו-7 מייצג "נכון מאוד לגביי".</div>
+            <div class="instruction-item">השאלון מנוסח בלשון זכר ופונה לשני המינים.</div>
+        </div>
+        <button onclick="startQuiz()">לתחילת השאלון</button>
+    </div>
+
+    <div id="step3" class="card">
+        <div id="questionsList"></div>
+        <button onclick="finishQuiz()">סיימתי, לתוצאות 😊</button>
+    </div>
+
+    <div id="step4" class="card">
+        <div class="result-box">
+            <h1>פרופיל הלמידה שלך</h1>
+            <p>הציון הוא ממוצע בטווח של 1 עד 7:</p>
+            <div id="resultsContainer"></div>
+        </div>
+
+        <div class="legend">
+            <h4>פענוח מדדי הלמידה:</h4>
+            <div class="legend-item" style="border-right-color: var(--success-green);"><strong>5.6 - 7.0:</strong> תחום שמהווה עבורך מנוע צמיחה משמעותי.</div>
+            <div class="legend-item" style="border-right-color: var(--warning-yellow);"><strong>3.5 - 5.5:</strong> קיימת תשתית טובה אך נדרש תרגול והתמדה להפיכת המיומנות לעוצמה.</div>
+            <div class="legend-item" style="border-right-color: var(--danger-red);"><strong>1.0 - 3.4:</strong> פער שעלול לעכב התפתחות מקצועית.</div>
+            
+            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h4>מה נמדד בשאלון?</h4>
+            <div class="style-desc"><strong>תשוקה ומסוגלות:</strong> המניע הפנימי שלך ללמוד והביטחון ביכולתך להצליח באתגרים חדשים.</div>
+            <div class="style-desc"><strong>עומק וניתוח:</strong> היכולת לעבד מידע בצורה ביקורתית ולייצר תובנות עמוקות.</div>
+            <div class="style-desc"><strong>ביצוע ויישום:</strong> היכולת הפרקטית לנהל זמן ומשאבים כדי להוציא למידה לפועל.</div>
+        </div>
+
+        <div class="footer">
+            <p>כל הזכויות שמורות ל-WEMPACT ©</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycb1CYe6qZmLZqkSKE8Hu7bXL0mksVtZaFEHhImSlS5Q35ts9_GzibJhGX3Ub2lrESaT/exec';
+
+    function getDailyCode() {
+        const n = new Date();
+        return `${n.getDate()}${n.getMonth()+1}${String(n.getFullYear()).slice(-2)}`;
+    }
+
+    const questions = [
+        { q: "אני מעדיף משימות שמאתגרות אותי ומאפשרות לי ללמוד דברים חדשים", cat: "תשוקה ומסוגלות" },
+        { q: "חשוב לי להבין את חומר הלימוד לעומק, גם אם זה דורש ממני מאמץ נוסף", cat: "תשוקה ומסוגלות" },
+        { q: "אני בטוח שאצליח להבין את הנושאים המורכבים אם אשקיע מאמץ", cat: "תשוקה ומסוגלות" },
+        { q: "אני מאמין שהמיומנויות שאני לומד כעת יהיו שימושיות עבורי בעבודה", cat: "תשוקה ומסוגלות" },
+        { q: "לעיתים קרובות אני מרגיש חוסר ביטחון ביכולת שלי להצליח בלמידה", cat: "תשוקה ומסוגלות", reverse: true },
+        
+        { q: "כשאני קורא או שומע מידע חדש, אני מנסה לקשר אותו לידע קודם שיש לי", cat: "עומק וניתוח" },
+        { q: "אני נוהג לסכם לעצמי את הנקודות המרכזיות כדי לארגן את המידע", cat: "עומק וניתוח" },
+        { q: "אני בוחן את המידע באופן ביקורתי ומנסה לחשוב על חלופות משלי", cat: "עומק וניתוח" },
+        { q: "אני נוטה לקבל מידע כפי שהוא בלי לשאול עליו שאלות לעומק", cat: "עומק וניתוח", reverse: true },
+        { q: "במהלך הלמידה, אני עוצר לוודא שאני באמת מבין את מה שלמדתי", cat: "עומק וניתוח" },
+        
+        { q: "אני דואג לסביבת עבודה מאורגנת ושקטה שמאפשרת לי ריכוז", cat: "ביצוע ויישום" },
+        { q: "אני מנהל את הזמן שלי בצורה יעילה כדי להספיק לעבור על הכל", cat: "ביצוע ויישום" },
+        { q: "כשאני נתקל בנושא קשה, אני נוטה לוותר עליו ולעבור הלאה", cat: "ביצוע ויישום", reverse: true },
+        { q: "אני נעזר בעמיתים או במומחים כאשר אני מרגיש שיש לי פער בידע", cat: "ביצוע ויישום" },
+        { q: "אני מתקשה להתמיד בלמידה כשהחומר הופך למשעמם או מורכב", cat: "ביצוע ויישום", reverse: true }
+    ];
+
+    function goToInstructions() {
+        const user = document.getElementById('userName').value;
+        const code = document.getElementById('accessCode').value;
+        if(user && code === getDailyCode()) {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('greeting').innerText = `היי ${user}, בוא נתחיל.`;
+        } else { alert('אנא הזן שם מלא וקוד כניסה תקין.'); }
+    }
+
+    function startQuiz() {
+        window.scrollTo(0,0);
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.add('active');
+        const list = document.getElementById('questionsList');
+        list.innerHTML = questions.map((item, i) => `
+            <div class="question-row">
+                <div class="question-container">
+                    <span class="question-num">${i+1}.</span>
+                    <span class="question-text">${item.q}</span>
+                </div>
+                <div class="options-row">
+                    ${[1,2,3,4,5,6,7].map(n => `
+                        <label class="option">
+                            <span class="option-num">${n}</span>
+                            <input type="radio" name="q${i}" value="${n}">
+                        </label>
+                    `).join('')}
+                </div>
+            </div>`).join('');
+    }
+
+    function finishQuiz() {
+        let sums = { "תשוקה ומסוגלות": 0, "עומק וניתוח": 0, "ביצוע ויישום": 0 };
+        let counts = { "תשוקה ומסוגלות": 0, "עומק וניתוח": 0, "ביצוע ויישום": 0 };
+        let answered = 0;
+
+        questions.forEach((item, i) => {
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+            if(sel) {
+                let val = parseInt(sel.value);
+                if(item.reverse) { val = 8 - val; } 
+                sums[item.cat] += val;
+                counts[item.cat]++;
+                answered++;
+            }
+        });
+
+        if(answered < 15) { alert('אנא ענה על כל 15 ההיגדים.'); return; }
+
+        const passionAvg = (sums["תשוקה ומסוגלות"] / counts["תשוקה ומסוגלות"]).toFixed(1);
+        const depthAvg = (sums["עומק וניתוח"] / counts["עומק וניתוח"]).toFixed(1);
+        const executionAvg = (sums["ביצוע ויישום"] / counts["ביצוע ויישום"]).toFixed(1);
+
+        const payload = {
+            name: document.getElementById('userName').value,
+            passionAvg: passionAvg,
+            depthAvg: depthAvg,
+            executionAvg: executionAvg
+        };
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const res = document.getElementById('resultsContainer');
+        res.innerHTML = Object.keys(sums).map(cat => {
+            let avg = (sums[cat] / counts[cat]).toFixed(1);
+            let color = avg >= 5.6 ? 'var(--success-green)' : (avg >= 3.5 ? 'var(--warning-yellow)' : 'var(--danger-red)');
+            return `<div class="style-score">
+                        <span class="style-name">${cat}:</span>
+                        <span class="style-val" style="color: ${color}">${avg}</span>
+                    </div>`;
+        }).join('');
+
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step4').classList.add('active');
+        window.scrollTo(0,0);
+    }
+</script>
+</body>
+</html>
