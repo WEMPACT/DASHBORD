@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WEMPACT | אבחון סגנונות ניהול אדיג'ס</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wempact-dark: #050a1b; 
+            --wempact-blue: #185adb;
+            --wempact-orange: #FF8C00;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: linear-gradient(135deg, #050a1b, #0c1b3d);
+            margin: 0; padding: 0; color: #333; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
+        }
+
+        .top-logo { position: fixed; top: 15px; left: 15px; text-align: left; color: white; z-index: 1000; }
+        .logo-main { font-weight: bold; font-size: 1.1em; letter-spacing: 1px; }
+
+        .card {
+            background: var(--white); width: 92%; max-width: 550px; padding: 25px;
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: right; position: relative; box-sizing: border-box; margin: 20px auto;
+        }
+
+        .progress-container { width: 100%; height: 6px; background: #eee; margin-bottom: 25px; border-radius: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--wempact-blue); width: 0%; transition: 0.3s; }
+
+        h2 { color: var(--wempact-dark); font-size: 1.4rem; margin-top: 0; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: 'Assistant'; font-size: 1rem; }
+
+        .btn { background: var(--wempact-blue); color: white; border: none; padding: 14px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-weight: 600; display: block; margin: 10px auto; width: 100%; transition: 0.3s; -webkit-tap-highlight-color: transparent; }
+        .btn-secondary { background: #f0f0f0; color: #555; font-size: 0.95rem; }
+
+        .option-item { background: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .option-text { font-size: 0.9rem; line-height: 1.3; flex: 1; }
+        
+        select { padding: 8px; border-radius: 6px; border: 2px solid var(--wempact-blue); font-weight: bold; color: var(--wempact-blue); background: white; width: 65px; font-size: 1rem; }
+
+        .result-box { background: #f0f4ff; padding: 12px; margin-bottom: 8px; border-radius: 10px; display: flex; justify-content: space-between; border-right: 4px solid var(--wempact-blue); }
+        .score-val { font-weight: 800; color: var(--wempact-blue); }
+
+        #loginPage, #introPage, #surveyPage, #finishBanner, #resultsPage { display: none; }
+        .active { display: block !important; }
+        
+        .instruction-item { display: flex; align-items: flex-start; margin-bottom: 10px; font-size: 0.95rem; }
+        .instruction-num { min-width: 25px; font-weight: bold; color: var(--wempact-orange); }
+
+        @media (max-width: 380px) {
+            .card { padding: 15px; }
+            .option-text { font-size: 0.8rem; }
+            select { width: 55px; padding: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-logo"><div class="logo-main">WEMPACT</div></div>
+
+    <div id="loginPage" class="card active">
+        <h2>שלום רב</h2>
+        <p>לפניך שאלון לאבחון סגנונות ניהול (אדיג'ס).</p>
+        <input type="text" id="userName" placeholder="שם מלא">
+        <input type="password" id="entryCode" placeholder="קוד כניסה">
+        <button class="btn" onclick="validateLogin()">מתחילים</button>
+    </div>
+
+    <div id="introPage" class="card">
+        <h2 id="welcomeMsg"></h2>
+        <div class="instruction-list">
+            <div class="instruction-item"><span class="instruction-num">א.</span><span>לפניך 20 שורות של היגדים לדירוג.</span></div>
+            <div class="instruction-item"><span class="instruction-num">ב.</span><span>בכל שורה עליך לדרג את 4 ההיגדים לפי מידת התאמתם אליך.</span></div>
+            <div class="instruction-item"><span class="instruction-num">ג.</span><span>דרג כל היגד בערכים: 8 (הכי מתאים), 4, 2, 1 (הכי פחות).</span></div>
+            <div class="instruction-item"><span class="instruction-num">ד.</span><span><b>שים לב:</b> אין להשתמש באותו מספר פעמיים באותה שורה.</span></div>
+            <div class="instruction-item"><span class="instruction-num">ה.</span><span>השאלון מנוסח בלשון זכר ופונה לשני המינים.</span></div>
+        </div>
+        <button class="btn" onclick="startSurvey()">הבנתי, בואו נתחיל</button>
+    </div>
+
+    <div id="surveyPage" class="card">
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        <h3 id="questionTitle" style="color: var(--wempact-blue); margin-bottom: 15px; font-size: 1rem;"></h3>
+        <div id="adizesOptions"></div>
+        <button class="btn" onclick="nextStep()">המשך</button>
+        <button id="prevBtn" class="btn btn-secondary" onclick="prevStep()">חזור לשאלה קודמת</button>
+    </div>
+
+    <div id="finishBanner" class="card" style="text-align: center;">
+        <h2>כל הכבוד!</h2>
+        <p id="statusMsg">שומר נתונים בטבלה...</p>
+        <button id="resBtn" class="btn" style="display:none;" onclick="showResults()">לתוצאות 😊</button>
+    </div>
+
+    <div id="resultsPage" class="card">
+        <h2 id="finalGreeting" style="text-align: center; font-size: 1.2rem;"></h2>
+        <div id="resultsContent"></div>
+        <div id="finalAnalysis" style="background: #f1f4f9; padding: 15px; border-radius: 12px; margin-top: 15px; border-right: 4px solid var(--wempact-orange); line-height: 1.6; font-size: 0.95rem;"></div>
+        <p style="text-align: center; font-weight: bold; margin-top: 20px; color: var(--wempact-blue);">תודה על שיתוף הפעולה!</p>
+        <div style="text-align: center; font-size: 0.75em; color: #999; margin-top: 20px;">WEMPACT © כל הזכויות שמורות</div>
+    </div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBw1K0mOtzf2fYhEdnCOAOapGndkIljyBzGf_R9FBjaXGhMSE_jKupyXwPzJNSllW2bA/exec"; 
+    
+    let currentStep = 0; 
+    let userName = ""; 
+    let userSelections = [];
+
+    const questions = [
+        { title: "מטרתי העיקרית היא", options: ["להיות במשרה עם עמדה", "להיות הטוב ביותר בשטח שלי", "להשיג הכרה לעבודתי", "להרגיש ביטחון במקום עבודתי"] },
+        { title: "אני נהנה/ת מעבודות", options: ["תכניות מוגדרות היטב", "המאפשרות גיוונים", "שמאפשרות פעולה עצמאית", "שאנשים מעורבים בהן"] },
+        { title: "אני מצפה מאנשים שעובדים עבורי להיות", options: ["יעילים ומהירים", "נאמנים ואחראים", "בעלי יכולת גבוהה", "פתוחים לרעיונות והצעות"] },
+        { title: "בעבודתי אני מצפה להשיג", options: ["תוצאות מעשיות", "את הפתרונות הטובים ביותר", "גישות חדשות או רעיונות חדשים", "אווירה טובה"] },
+        { title: "דרך ההתקשרות הטובה ביותר שלי היא", options: ["באסיפה רשמית", "בכתיבה", "בקשר ישיר אחד על אחד", "בשיחה קבוצתית"] },
+        { title: "בתכנון שלי אני מדגיש/ה", options: ["בעיות בהווה", "השגת מטרות", "מטרות לעתיד", "טיפוח קריירה של אנשים"] },
+        { title: "בהתמודדות עם בעיה אני", options: ["מסתמך על גישות שהוכיחו את עצמן", "מנתח בזהירות", "מחפש גישות יצירתיות", "מסתמך על הרגשה"] },
+        { title: "בעת שימוש במידע אני מעדיף/ה", options: ["עובדות מוגדרות", "מידע מדויק ושלם", "כיסוי כללי של אפשרויות רבות", "מידע מסוים שמובן בקלות"] },
+        { title: "כאשר איני בטוח/ה מה לעשות אני", options: ["מחפש עובדות", "משתהה לפני שמקבל החלטה", "מסתמך על אינטואיציה", "חושב על פשרה אפשרית"] },
+        { title: "אני משתדל להימנע מ...", options: ["ויכוחים ארוכים", "לא לגמור עבודה", "שימוש במספרים ונוסחאות", "קונפליקט עם אחרים"] },
+        { title: "אני טוב/ה במיוחד ב...", options: ["זיכרון של תאריכים ועובדות", "פתירת בעיות קשות", "ראיית אפשרויות רבות", "קשרים עם אחרים"] },
+        { title: "כאשר זמן הוא גורם חשוב אני", options: ["מחליט/ה ופועל/ת במהירות", "משתמש/ת בתוכנית וסדר עדיפויות", "מסרב/ת להילחץ", "מחפש/ת הדרכה ותמיכה"] },
+        { title: "במצבים חברתיים אני בדרך כלל", options: ["מדבר/ת עם אחרים", "חושב/ת על מה שנאמר", "מתבונן במתרחש סביב", "מקשיב/ה לשיחה"] },
+        { title: "אני טוב בזיכרון", options: ["שמות אנשים", "מקומות בהם נפגשנו", "פני אנשים", "טיפוסי אנשים"] },
+        { title: "העבודה שאני עושה מאפשרת לי", options: ["כוח להשפיע על אחרים", "אתגרים מעניינים", "להשיג את מטרותיי האישיות", "להיות מקובל על ידי הקבוצה"] },
+        { title: "אני מסתדר/ת טוב עם אלו שהם", options: ["בעלי מרץ ותחרותיים", "בעלי ביטחון עצמי", "בעלי ראש פתוח", "מנומסים ונותני אמון"] },
+        { title: "כאשר אני תחת לחץ זמן", options: ["אני נתקע/ת בחרדה", "זה עוזר לי להתרכז בבעיה", "אני הופך/ת מתוסכל/ת מחוסר ההספק", "אני נעשה/ת שכחן/ית"] },
+        { title: "אחרים חושבים שאני", options: ["תוקפני/ת", "בעל/ת משמעת עצמית", "בעל/ת דמיון", "תומך/ת ועוזר/ת"] },
+        { title: "העבודה שאני עושה מאפשרת לי", options: ["מציאותיות וישירות", "שיטתיות ופשוטות", "כוללניות וגמישות", "רגישות לצרכי אחרים"] },
+        { title: "איני אוהב", options: ["איבוד שליטה", "עבודה משעממת", "לציית ולעקוב אחרי חוקים", "להיות דחוי/ה"] }
+    ];
+
+    function validateLogin() {
+        const d = new Date(); const code = `${d.getDate()}${d.getMonth()+1}${d.getFullYear().toString().slice(-2)}`;
+        userName = document.getElementById('userName').value.trim();
+        if (userName.length < 2) return alert("נא להזין שם מלא");
+        if (document.getElementById('entryCode').value !== code) return alert("קוד כניסה שגוי");
+        document.getElementById('loginPage').classList.remove('active');
+        document.getElementById('introPage').classList.add('active');
+        document.getElementById('welcomeMsg').innerText = `שלום ${userName}`;
+    }
+
+    function startSurvey() { document.getElementById('introPage').classList.remove('active'); document.getElementById('surveyPage').classList.add('active'); showQuestion(); }
+
+    function showQuestion() {
+        const q = questions[currentStep];
+        document.getElementById('questionTitle').innerText = `${currentStep + 1}. ${q.title}`;
+        document.getElementById('progressBar').style.width = ((currentStep / 20) * 100) + "%";
+        document.getElementById('prevBtn').style.display = currentStep === 0 ? "none" : "block";
+        
+        let html = ""; const saved = userSelections[currentStep] || ["","","",""];
+        q.options.forEach((opt, i) => {
+            html += `<div class="option-item"><span class="option-text">${opt}</span>
+                <select class="ad-sel"><option value="">-</option>
+                ${[8,4,2,1].map(n => `<option value="${n}" ${saved[i]==n?'selected':''}>${n}</option>`).join('')}
+                </select></div>`;
+        });
+        document.getElementById('adizesOptions').innerHTML = html;
+
+        const selects = document.querySelectorAll('.ad-sel');
+        selects.forEach(s => s.onchange = () => { 
+            selects.forEach(os => { if(os!==s && os.value===s.value && s.value!=="") os.value=""; })});
+    }
+
+    function nextStep() {
+        const selects = Array.from(document.querySelectorAll('.ad-sel'));
+        const vals = selects.map(s => s.value);
+        if (vals.includes("")) return alert("נא לדרג את כל 4 ההיגדים");
+        
+        userSelections[currentStep] = vals;
+        if (++currentStep < 20) showQuestion();
+        else {
+            document.getElementById('surveyPage').classList.remove('active');
+            document.getElementById('finishBanner').classList.add('active');
+            sendDataToSheets();
+        }
+    }
+
+    function prevStep() { if(currentStep > 0) { currentStep--; showQuestion(); } }
+
+    function sendDataToSheets() {
+        let sc = { P:0, A:0, E:0, I:0 };
+        userSelections.forEach(r => { sc.P+=+r[0]; sc.A+=+r[1]; sc.E+=+r[2]; sc.I+=+r[3]; });
+        
+        const sorted = Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+        const summaryStr = sorted[0][0] + sorted[1][0];
+
+        const formData = new URLSearchParams({
+            date: new Date().toLocaleDateString('he-IL'),
+            name: userName,
+            p: sc.P, a: sc.A, e: sc.E, i: sc.I,
+            summary: summaryStr
+        });
+
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData })
+        .then(() => { 
+            document.getElementById('statusMsg').innerText = "הנתונים נשמרו בהצלחה!";
+            document.getElementById('resBtn').style.display = "block";
+        }).catch(() => {
+            document.getElementById('statusMsg').innerText = "שגיאה בשמירה, אך ניתן לצפות בתוצאות";
+            document.getElementById('resBtn').style.display = "block";
+        });
+    }
+
+    function showResults() {
+        document.getElementById('finishBanner').classList.remove('active');
+        document.getElementById('resultsPage').classList.add('active');
+        document.getElementById('finalGreeting').innerText = `שלום ${userName}, הפרופיל הדומיננטי שלך הוא:`;
+        
+        let sc = { P:0, A:0, E:0, I:0 };
+        userSelections.forEach(r => { sc.P+=+r[0]; sc.A+=+r[1]; sc.E+=+r[2]; sc.I+=+r[3]; });
+        const sorted = Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+        
+        const info = {
+            P: { t: "P - משימתי (Producer)", d: "ממוקד בתוצאות, חרוץ ודואג שהעבודה תיעשה כאן ועכשיו." },
+            A: { t: "A - מנהלן (Administrator)", d: "ממוקד בסדר, ארגון, נהלים ויעילות המערכת." },
+            E: { t: "E - יזם (Entrepreneur)", d: "ממוקד בחזון, יצירתיות, שינוי וראיית הזדמנויות." },
+            I: { t: "I - מתכלל (Integrator)", d: "ממוקד באנשים, שיתוף פעולה והרמוניה צוותית." }
+        };
+
+        document.getElementById('resultsContent').innerHTML = Object.entries(sc).map(([k,v]) => 
+            `<div class="result-box"><span><b>${info[k].t}</b></span><span class="score-val">${v}</span></div>`).join('');
+
+        const dom1 = sorted[0][0];
+        const dom2 = sorted[1][0];
+
+        document.getElementById('finalAnalysis').innerHTML = `
+            הפרופיל הדומיננטי שלך מורכב משילוב של <b>${info[dom1].t}</b> ו-<b>${info[dom2].t}</b>.<br><br>
+            <b>מה זה אומר על ${info[dom1].t}?</b><br>
+            ${info[dom1].d}<br><br>
+            ניהול אפקטיבי דורש איזון בין כל המרכיבים. הבנת הסגנון שלך עוזרת לך לדעת היכן החוזקות שלך ואיפה כדאי להיעזר באחרים המשלימים אותך.
+        `;
+    }
+</script>
+</body>
+</html>
